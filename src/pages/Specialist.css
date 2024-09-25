@@ -1,0 +1,48 @@
+.specialists-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  h1 {
+    color: #007bff;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .specialists-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .specialist-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .specialist-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  
+  .specialist-card h2 {
+    color: #007bff;
+    margin-bottom: 0.5rem;
+  }
+  
+  .specialist-specialty {
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 1rem;
+  }
+  
+  .specialist-card p {
+    margin-bottom: 0.5rem;
+  }
