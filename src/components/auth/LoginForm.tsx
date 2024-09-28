@@ -18,9 +18,10 @@ const LoginForm: React.FC = () => {
         try {
          
           const resultAction = await dispatch(login({ email, password })).unwrap();
-          
           dispatch(closeLoginModal());
-            navigate('/dashboard');
+
+          console.log('Login successful:', resultAction);
+
             switch (resultAction.user.role) {
               case UserRole.CLIENT:
                   navigate('/client-dashboard');
@@ -32,7 +33,8 @@ const LoginForm: React.FC = () => {
                   navigate('/admin');
                   break;
               default:
-                  navigate('/');
+                console.warn('Unknown user role:', resultAction.user.role);
+                navigate('/');
           }
         } catch (error) {
             

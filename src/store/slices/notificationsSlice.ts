@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { NotificationResponseDto, NotificationRequestDto } from '../../types/notification';
-import { adminApi } from '../../api/adminApi';
+import api from '../../api/axios';
 import { RootState } from '../rootReducer';
 
 interface NotificationsState {
@@ -23,7 +23,7 @@ export const fetchNotifications = createAsyncThunk<NotificationResponseDto[], vo
   'notifications/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllNotifications();
+      const response = await api.get('/api/notifications');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch notifications');
@@ -35,7 +35,7 @@ export const createNotification = createAsyncThunk<NotificationResponseDto, Noti
   'notifications/create',
   async (notificationData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.createNotification(notificationData);
+      const response = await api.post('/api/notifications', notificationData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create notification');
@@ -47,7 +47,7 @@ export const deleteNotification = createAsyncThunk<number, number, { rejectValue
   'notifications/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await adminApi.deleteNotification(id);
+      await api.delete(`/api/notifications/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue('Failed to delete notification');
@@ -93,7 +93,7 @@ export const { resetNotificationsStatus } = notificationsSlice.actions;
 
 export const selectAllNotifications = (state: RootState) => state.notifications.notifications;
 export const selectNotificationById = (state: RootState, notificationId: number) => 
-  state.notifications.notifications.find(notification => notification.id === notificationId);
+  state.notifications.notifications.find((notification: { id: number; }) => notification.id === notificationId);
 export const selectCurrentNotification = (state: RootState) => state.notifications.currentNotification;
 export const selectNotificationsStatus = (state: RootState) => state.notifications.status;
 export const selectNotificationsError = (state: RootState) => state.notifications.error;

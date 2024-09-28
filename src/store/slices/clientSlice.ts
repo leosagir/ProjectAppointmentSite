@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ClientResponseDto, ClientRequestDto, ClientUpdateDto } from '../../types/client';
-import { adminApi } from '../../api/adminApi';
+import api from '../../api/axios';
 import { RootState } from '../rootReducer';
 
 interface ClientsState {
@@ -21,7 +21,7 @@ export const fetchClients = createAsyncThunk<ClientResponseDto[], void, { reject
   'clients/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllClients();
+      const response = await api.get('/api/admin/clients');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch clients');
@@ -33,7 +33,7 @@ export const fetchClientById = createAsyncThunk<ClientResponseDto, number, { rej
   'clients/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getClientById(id);
+      const response = await api.get(`/api/admin/clients/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch client');
@@ -45,7 +45,7 @@ export const createClient = createAsyncThunk<ClientResponseDto, ClientRequestDto
   'clients/create',
   async (clientData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.createClient(clientData);
+      const response = await api.post('/api/admin/clients', clientData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create client');
@@ -57,7 +57,7 @@ export const updateClient = createAsyncThunk<ClientResponseDto, { id: number; da
   'clients/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.updateClient(id, data);
+      const response = await api.put(`/api/admin/clients/${id}`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to update client');
@@ -69,7 +69,7 @@ export const deactivateClient = createAsyncThunk<ClientResponseDto, number, { re
   'clients/deactivate',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.deactivateClient(id);
+      const response = await api.post(`/api/admin/clients/${id}/deactivate`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to deactivate client');
@@ -81,7 +81,7 @@ export const reactivateClient = createAsyncThunk<ClientResponseDto, number, { re
   'clients/reactivate',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.reactivateClient(id);
+      const response = await api.post(`/api/admin/clients/${id}/reactivate`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to reactivate client');
@@ -151,7 +151,7 @@ export const { resetClientsStatus } = clientsSlice.actions;
 
 export const selectAllClients = (state: RootState) => state.clients.clients;
 export const selectClientById = (state: RootState, clientId: number) => 
-  state.clients.clients.find(client => client.id === clientId);
+  state.clients.clients.find((client: { id: number; }) => client.id === clientId);
 export const selectCurrentClient = (state: RootState) => state.clients.currentClient;
 export const selectClientsStatus = (state: RootState) => state.clients.status;
 export const selectClientsError = (state: RootState) => state.clients.error;

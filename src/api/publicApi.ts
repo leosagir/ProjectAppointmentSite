@@ -4,13 +4,10 @@ import { ServiceResponseDto } from "../types/services";
 import { SpecializationResponseDto } from "../types/specialization";
 import { SpecialistResponseDto } from "../types/specialists";
 
-const API_BASE_URL = 'http://localhost:8080';
-
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  /*headers: {
+  headers: {
     'Content-Type': 'application/json',
-  },*/
+  },
 });
 
 export const publicApi = {

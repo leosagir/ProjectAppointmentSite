@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { SpecialistResponseDto, SpecialistRequestDto, SpecialistUpdateDto, SpecialistDetailedDto } from '../../types/specialists';
-import { adminApi } from '../../api/adminApi'
 import { RootState } from '../rootReducer';
 import axios from 'axios';
-import { specialistApi } from '../../api/specialistApi';
+import api from '../../api/axios';
 
 interface SpecialistsState {
     specialists: SpecialistResponseDto[];
@@ -25,7 +24,7 @@ export const fetchSpecialists = createAsyncThunk<SpecialistResponseDto[], void, 
     'specialists/fetchAll',
     async(_, {rejectWithValue}) => {
         try {
-            const response = await adminApi.getAllSpecialists();
+            const response = await api.get('/api/specialists');
             return response.data;
         } catch(error) {
             return rejectWithValue('Failed to fetch specialists');
@@ -37,7 +36,7 @@ export const fetchSpecialistById = createAsyncThunk<SpecialistResponseDto, numbe
     'specialists/fetchById',
     async (id, { rejectWithValue }) => {
       try {
-        const response = await adminApi.getSpecialistById(id);
+        const response = await api.get(`/api/specialists/${id}`);
         return response.data;
       } catch (error) {
         return rejectWithValue('Failed to fetch specialist');
@@ -49,7 +48,7 @@ export const createSpecialist = createAsyncThunk<SpecialistResponseDto, Speciali
     'specialists/create',
     async (specialistData, {rejectWithValue}) => {
         try {
-            const response = await adminApi.registerSpecialist(specialistData);
+            const response = await api.post('/api/specialists/register', specialistData);
             return response.data;
         } catch(error) {
             return rejectWithValue('Failed to create specialist');
@@ -61,7 +60,7 @@ export const updateSpecialist = createAsyncThunk<SpecialistResponseDto, {id: num
     'specialists/update',
     async({id, data}, {rejectWithValue}) => {
         try {
-            const response = await adminApi.updateSpecialist(id, data);
+            const response = await api.put(`/api/specialists/${id}`, data);
             return response.data;
         } catch(error) {
             return rejectWithValue('Failed to update specialist');
@@ -73,7 +72,7 @@ export const deleteSpecialist = createAsyncThunk<number, number, {rejectValue: s
     'specialists/delete',
     async (id, {rejectWithValue}) => {
         try {
-            await adminApi.deleteSpecialist(id);
+            await api.delete(`/api/specialists/${id}`);
             return id;
         } catch(error) {
             return rejectWithValue('Failed to delete specialist');
@@ -85,31 +84,31 @@ export const deactivateSpecialist = createAsyncThunk<SpecialistResponseDto, numb
     'specialists/deactivate',
     async (id, { rejectWithValue }) => {
       try {
-        const response = await adminApi.deactivateSpecialist(id);
+        const response = await api.post(`/api/specialists/${id}/deactivate`);
         return response.data;
       } catch (error) {
         return rejectWithValue('Failed to deactivate specialist');
       }
     }
-  );
+);
   
-  export const reactivateSpecialist = createAsyncThunk<SpecialistResponseDto, number, { rejectValue: string }>(
+export const reactivateSpecialist = createAsyncThunk<SpecialistResponseDto, number, { rejectValue: string }>(
     'specialists/reactivate',
     async (id, { rejectWithValue }) => {
       try {
-        const response = await adminApi.reactivateSpecialist(id);
+        const response = await api.post(`/api/specialists/${id}/reactivate`);
         return response.data;
       } catch (error) {
         return rejectWithValue('Failed to reactivate specialist');
       }
     }
-  );
+);
 
 export const fetchCurrentSpecialist = createAsyncThunk<SpecialistResponseDto, void, { rejectValue: string }>(
     'specialists/fetchCurrent',
     async (_, { rejectWithValue }) => {
       try {
-        const response = await specialistApi.getCurrentSpecialist();
+        const response = await api.get('/api/specialists/my');
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {

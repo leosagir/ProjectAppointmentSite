@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { AdminResponseDto, AdminRequestDto, AdminUpdateDto } from '../types/admin';
 import { ClientResponseDto, ClientRequestDto, ClientUpdateDto } from '../types/client';
 import { SpecialistResponseDto, SpecialistRequestDto, SpecialistUpdateDto } from '../types/specialists';
@@ -7,15 +7,49 @@ import { SpecializationResponseDto, SpecializationRequestDto, SpecializationUpda
 import { AppointmentResponseDto, AppointmentCreateDto, AppointmentUpdateDto, AppointmentBookDto } from '../types/appointment';
 import { ReviewResponseDto } from '../types/review';
 import { NotificationResponseDto, NotificationRequestDto } from '../types/notification';
-
-const API_BASE_URL = 'http://localhost:8080';
+import { tokenManager } from '../utils/tokenManager';
+import { refreshTokenThunk } from '../store/slices/authSlice';
+import store from '../store/store';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+api.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = tokenManager.getAccessToken();
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const { accessToken, refreshToken } = await store.dispatch(refreshTokenThunk()).unwrap();
+        tokenManager.saveTokens(accessToken, refreshToken);
+        api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        tokenManager.removeTokens();
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const adminApi = {
   // Админы

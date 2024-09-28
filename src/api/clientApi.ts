@@ -3,15 +3,24 @@ import { AppointmentBookDto, AppointmentResponseDto } from "../types/appointment
 import { ClientResponseDto, ClientUpdateDto } from "../types/client";
 import { ReviewCreateDto, ReviewResponseDto, ReviewUpdateDto } from "../types/review";
 import { NotificationResponseDto } from "../types/notification";
-
-const API_BASE_URL = 'http://localhost:8080';
+import { tokenManager } from '../utils/tokenManager';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+api.interceptors.request.use(
+  (config) => {
+    const token = tokenManager.getAccessToken();
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export const clientApi = {
     getCurrentClient: (): Promise<AxiosResponse<ClientResponseDto>> => 

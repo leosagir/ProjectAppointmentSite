@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ServiceResponseDto, ServiceRequestDto, ServiceUpdateDto } from '../../types/services';
-import { adminApi } from '../../api/adminApi';
-import { RootState } from '../rootReducer';
+import api from '../../api/axios';
+import { RootState } from '../store';
 
 interface ServicesState {
   specialistServices: any;
@@ -23,7 +23,7 @@ export const fetchServices = createAsyncThunk<ServiceResponseDto[], void, { reje
   'services/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllServices();
+      const response = await api.get('/api/services');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch services');
@@ -35,7 +35,7 @@ export const fetchServiceById = createAsyncThunk<ServiceResponseDto, number, { r
   'services/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getServiceById(id);
+      const response = await api.get(`/api/services/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch service');
@@ -47,7 +47,7 @@ export const createService = createAsyncThunk<ServiceResponseDto, ServiceRequest
   'services/create',
   async (serviceData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.createService(serviceData);
+      const response = await api.post('/api/services', serviceData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create service');
@@ -59,7 +59,7 @@ export const updateService = createAsyncThunk<ServiceResponseDto, { id: number; 
   'services/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.updateService(id, data);
+      const response = await api.put(`/api/services/${id}`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to update service');
@@ -71,7 +71,7 @@ export const deleteService = createAsyncThunk<number, number, { rejectValue: str
   'services/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await adminApi.deleteService(id);
+      await api.delete(`/api/services/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue('Failed to delete service');
@@ -129,7 +129,7 @@ export const { resetServicesStatus } = servicesSlice.actions;
 
 export const selectAllServices = (state: RootState) => state.services.services;
 export const selectServiceById = (state: RootState, serviceId: number) => 
-  state.services.services.find(service => service.id === serviceId);
+  state.services.services.find((service: { id: number; }) => service.id === serviceId);
 export const selectCurrentService = (state: RootState) => state.services.currentService;
 export const selectServicesStatus = (state: RootState) => state.services.status;
 export const selectServicesError = (state: RootState) => state.services.error;

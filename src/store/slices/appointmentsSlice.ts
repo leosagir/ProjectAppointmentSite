@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AppointmentResponseDto, AppointmentCreateDto, AppointmentUpdateDto, AppointmentBookDto } from '../../types/appointment';
-import { adminApi } from '../../api/adminApi';
+import api from '../../api/axios';
 import { RootState } from '../rootReducer';
 
 interface AppointmentsState {
@@ -25,7 +25,7 @@ export const fetchAppointments = createAsyncThunk<AppointmentResponseDto[], void
   'appointments/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllAppointments();
+      const response = await api.get('/api/appointments');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch appointments');
@@ -37,7 +37,7 @@ export const createAppointment = createAsyncThunk<AppointmentResponseDto, Appoin
   'appointments/create',
   async (appointmentData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.createAppointment(appointmentData);
+      const response = await api.post('/api/appointments', appointmentData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create appointment');
@@ -49,7 +49,7 @@ export const updateAppointment = createAsyncThunk<AppointmentResponseDto, { id: 
   'appointments/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.updateAppointment(id, data);
+      const response = await api.put(`/api/appointments/${id}`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to update appointment');
@@ -61,7 +61,7 @@ export const bookAppointment = createAsyncThunk<AppointmentResponseDto, { id: nu
   'appointments/book',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.bookAppointment(id, data);
+      const response = await api.put(`/api/appointments/${id}/book`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to book appointment');
@@ -73,7 +73,7 @@ export const deleteAppointment = createAsyncThunk<number, number, { rejectValue:
   'appointments/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await adminApi.deleteAppointment(id);
+      await api.delete(`/api/appointments/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue('Failed to delete appointment');
@@ -137,7 +137,7 @@ export const { resetAppointmentsStatus } = appointmentsSlice.actions;
 
 export const selectAllAppointments = (state: RootState) => state.appointments.appointments;
 export const selectAppointmentById = (state: RootState, appointmentId: number) => 
-  state.appointments.appointments.find(appointment => appointment.id === appointmentId);
+  state.appointments.appointments.find((appointment: { id: number; }) => appointment.id === appointmentId);
 export const selectCurrentAppointment = (state: RootState) => state.appointments.currentAppointment;
 export const selectAppointmentsStatus = (state: RootState) => state.appointments.status;
 export const selectAppointmentsError = (state: RootState) => state.appointments.error;

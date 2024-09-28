@@ -7,10 +7,15 @@ import { AppointmentResponseDto } from '../../types/appointment';
 const ClientAppointments: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const appointments = useSelector((state: RootState) => state.appointments.clientAppointments);
+  const status = useSelector((state: RootState) => state.appointments.status);
 
   useEffect(() => {
     dispatch(fetchAppointments());
   }, [dispatch]);
+
+  if (status === 'loading') {
+    return <div>Загрузка...</div>;
+  }
 
   return (
     <div>

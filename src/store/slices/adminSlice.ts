@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AdminResponseDto, AdminRequestDto, AdminUpdateDto } from '../../types/admin';
-import { adminApi } from '../../api/adminApi';
+import api from '../../api/axios';
 import { RootState } from '../rootReducer';
 
 interface AdminsState {
@@ -21,7 +21,7 @@ export const fetchAdmins = createAsyncThunk<AdminResponseDto[], void, { rejectVa
   'admins/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllAdmins();
+      const response = await api.get('/api/admin');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch admins');
@@ -33,7 +33,7 @@ export const fetchAdminById = createAsyncThunk<AdminResponseDto, number, { rejec
   'admins/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAdminById(id);
+      const response = await api.get(`/api/admin/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch admin');
@@ -45,7 +45,7 @@ export const createAdmin = createAsyncThunk<AdminResponseDto, AdminRequestDto, {
   'admins/create',
   async (adminData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.registerAdmin(adminData);
+      const response = await api.post('/api/admin/register', adminData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create admin');
@@ -57,7 +57,7 @@ export const updateAdmin = createAsyncThunk<AdminResponseDto, { id: number; data
   'admins/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.updateAdmin(id, data);
+      const response = await api.put(`/api/admin/${id}`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to update admin');
@@ -69,7 +69,7 @@ export const deactivateAdmin = createAsyncThunk<AdminResponseDto, number, { reje
   'admins/deactivate',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.deactivateAdmin(id);
+      const response = await api.post(`/api/admin/${id}/deactivate`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to deactivate admin');
@@ -81,7 +81,7 @@ export const reactivateAdmin = createAsyncThunk<AdminResponseDto, number, { reje
   'admins/reactivate',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.reactivateAdmin(id);
+      const response = await api.post(`/api/admin/${id}/reactivate`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to reactivate admin');
@@ -151,7 +151,7 @@ export const { resetAdminsStatus } = adminsSlice.actions;
 
 export const selectAllAdmins = (state: RootState) => state.admins.admins;
 export const selectAdminById = (state: RootState, adminId: number) => 
-  state.admins.admins.find(admin => admin.id === adminId);
+  state.admins.admins.find((admin: { id: number; }) => admin.id === adminId);
 export const selectCurrentAdmin = (state: RootState) => state.admins.currentAdmin;
 export const selectAdminsStatus = (state: RootState) => state.admins.status;
 export const selectAdminsError = (state: RootState) => state.admins.error;

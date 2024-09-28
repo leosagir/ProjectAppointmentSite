@@ -1,11 +1,16 @@
 import axios from 'axios';
+import store from '../store/store';
+import { setToken } from '../store/slices/authSlice';
 
 const API_BASE_URL = 'http://localhost:8080';
 
-export const loginApi = async (email: string, password: string) => {
+ export const loginApi = async (email: string, password: string) => {
+    
   const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
+  const { token } = response.data;
+  store.dispatch(setToken(token));
   return response.data;
-};
+ };
 
 export const registerApi = async (userData: any) => {
   const response = await axios.post(`${API_BASE_URL}/api/public/client/register`, userData);

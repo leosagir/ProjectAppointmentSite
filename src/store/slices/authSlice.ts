@@ -1,47 +1,43 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, User } from '../../types/auth';
 import { ClientRequestDto } from '../../types/client';
-import { removeTokens, saveTokens } from '../../utils/auth';
+import { tokenManager } from '../../utils/tokenManager';
 import api from '../../api/axios';
 import axios from 'axios';
 
 const initialState: AuthState = {
-    user: null,
-    accessToken: null,
-    refreshToken: null,
-    isAuthenticated: false,
-    loading: false,
-    error: null,
-    isLoginModalOpen: false,
-    isRegistrationModalOpen: false,
+  user: null,
+  accessToken: tokenManager.getAccessToken(),
+  refreshToken: tokenManager.getRefreshToken(),
+  isAuthenticated: !!tokenManager.getAccessToken(),
+  loading: false,
+  error: null,
+  isLoginModalOpen: false,
+  isRegistrationModalOpen: false,
 };
+
 export const login = createAsyncThunk<
   { user: User; accessToken: string; refreshToken: string },
   { email: string; password: string },
   { rejectValue: string }
 >('auth/login', async ({ email, password }, { rejectWithValue }) => {
-  console.log('Login thunk started');
   try {
-    
     const response = await api.post('/api/auth/login', { email, password });
-    
-    saveTokens(response.data.accessToken, response.data.refreshToken);
+    tokenManager.saveTokens(response.data.accessToken, response.data.refreshToken);
     return {
       user: { email: response.data.email, role: response.data.roles[0] },
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken
     };
   } catch (err) {
-    console.error('Login error:', err);
     if (axios.isAxiosError(err)) {
-      
       return rejectWithValue(err.response?.data?.message || 'Login failed');
     }
     return rejectWithValue('An unexpected error occurred');
   }
 });
 
-export const refreshToken = createAsyncThunk<
+export const refreshTokenThunk = createAsyncThunk<
   { accessToken: string; refreshToken: string },
   void,
   { rejectValue: string; state: { auth: AuthState } }
@@ -49,7 +45,7 @@ export const refreshToken = createAsyncThunk<
   const { auth } = getState();
   try {
     const response = await api.post('/api/auth/refresh', { refreshToken: auth.refreshToken });
-    saveTokens(response.data.accessToken, response.data.refreshToken);
+    tokenManager.saveTokens(response.data.accessToken, response.data.refreshToken);
     return {
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken
@@ -69,11 +65,9 @@ export const register = createAsyncThunk<
 >('auth/register', async (userData, { rejectWithValue }) => {
   try {
     const response = await api.post<{ user: User; accessToken: string; refreshToken: string }>('/api/public/client/register', userData);
-    
-    saveTokens(response.data.accessToken, response.data.refreshToken);
+    tokenManager.saveTokens(response.data.accessToken, response.data.refreshToken);
     return response.data;
   } catch (err) {
-    console.error('Register error:', err);
     if (axios.isAxiosError(err)) {
       if (err.response) {
         return rejectWithValue(err.response.data.message || 'Registration failed');
@@ -86,7 +80,7 @@ export const register = createAsyncThunk<
 });
 
 export const logout = createAsyncThunk('auth/logout', async () => {
-  removeTokens();
+  tokenManager.removeTokens();
 });
 
 const authSlice = createSlice({
@@ -95,6 +89,10 @@ const authSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      state.isAuthenticated = true;
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.accessToken = action.payload;
       state.isAuthenticated = true;
     },
     clearAuth: (state) => {
@@ -123,7 +121,6 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        console.log('Login fulfilled:', action.payload);
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
@@ -135,11 +132,11 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(refreshToken.fulfilled, (state, action) => {
+      .addCase(refreshTokenThunk.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
       })
-      .addCase(refreshToken.rejected, (state) => {
+      .addCase(refreshTokenThunk.rejected, (state) => {
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
@@ -170,6 +167,14 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, clearAuth, openLoginModal, closeLoginModal, openRegistrationModal, closeRegistrationModal } = authSlice.actions;
+export const { 
+  setUser, 
+  setToken, 
+  clearAuth, 
+  openLoginModal, 
+  closeLoginModal, 
+  openRegistrationModal, 
+  closeRegistrationModal 
+} = authSlice.actions;
 
 export default authSlice.reducer;

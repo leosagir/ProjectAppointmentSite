@@ -1,8 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ReviewResponseDto, ReviewCreateDto, ReviewUpdateDto } from '../../types/review';
-import { adminApi } from '../../api/adminApi';
-import { RootState } from '../rootReducer';
-import { clientApi } from '../../api/clientApi';
+import api from '../../api/axios';
+import { RootState } from '../store';
 
 interface ReviewsState {
   specialistReviews: any;
@@ -26,7 +25,7 @@ export const fetchReviews = createAsyncThunk<ReviewResponseDto[], void, { reject
   'reviews/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllReviews();
+      const response = await api.get('/api/reviews');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch reviews');
@@ -38,7 +37,7 @@ export const createReview = createAsyncThunk<ReviewResponseDto, ReviewCreateDto,
   'reviews/create',
   async (reviewData, { rejectWithValue }) => {
     try {
-      const response = await clientApi.createReview(reviewData);
+      const response = await api.post('/api/reviews', reviewData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create review');
@@ -50,7 +49,7 @@ export const updateReview = createAsyncThunk<ReviewResponseDto, { id: number; da
   'reviews/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await clientApi.updateReview(id, data);
+      const response = await api.put(`/api/reviews/${id}`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to update review');
@@ -62,7 +61,7 @@ export const deleteReview = createAsyncThunk<number, number, { rejectValue: stri
   'reviews/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await clientApi.deleteReview(id);
+      await api.delete(`/api/reviews/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue('Failed to delete review');
@@ -117,7 +116,7 @@ export const { resetReviewsStatus } = reviewsSlice.actions;
 
 export const selectAllReviews = (state: RootState) => state.reviews.reviews;
 export const selectReviewById = (state: RootState, reviewId: number) => 
-  state.reviews.reviews.find(review => review.id === reviewId);
+  state.reviews.reviews.find((review: { id: number; }) => review.id === reviewId);
 export const selectCurrentReview = (state: RootState) => state.reviews.currentReview;
 export const selectReviewsStatus = (state: RootState) => state.reviews.status;
 export const selectReviewsError = (state: RootState) => state.reviews.error;

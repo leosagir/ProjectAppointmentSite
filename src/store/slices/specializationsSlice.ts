@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { SpecializationResponseDto, SpecializationRequestDto, SpecializationUpdateDto } from '../../types/specialization';
-import { adminApi } from '../../api/adminApi';
 import { RootState } from '../rootReducer';
+import api from '../../api/axios';
 
 interface SpecializationsState {
   specializations: SpecializationResponseDto[];
@@ -21,7 +21,7 @@ export const fetchSpecializations = createAsyncThunk<SpecializationResponseDto[]
   'specializations/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getAllSpecializations();
+      const response = await api.get('/api/specializations');
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch specializations');
@@ -33,7 +33,7 @@ export const fetchSpecializationById = createAsyncThunk<SpecializationResponseDt
   'specializations/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await adminApi.getSpecializationById(id);
+      const response = await api.get(`/api/specializations/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch specialization');
@@ -45,7 +45,7 @@ export const createSpecialization = createAsyncThunk<SpecializationResponseDto, 
   'specializations/create',
   async (specializationData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.createSpecialization(specializationData);
+      const response = await api.post('/api/specializations', specializationData);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to create specialization');
@@ -57,7 +57,7 @@ export const updateSpecialization = createAsyncThunk<SpecializationResponseDto, 
   'specializations/update',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.updateSpecialization(id, data);
+      const response = await api.put(`/api/specializations/${id}`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to update specialization');
@@ -69,7 +69,7 @@ export const deleteSpecialization = createAsyncThunk<number, number, { rejectVal
   'specializations/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await adminApi.deleteSpecialization(id);
+      await api.delete(`/api/specializations/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue('Failed to delete specialization');
@@ -127,7 +127,7 @@ export const { resetSpecializationsStatus } = specializationsSlice.actions;
 
 export const selectAllSpecializations = (state: RootState) => state.specializations.specializations;
 export const selectSpecializationById = (state: RootState, specializationId: number) => 
-  state.specializations.specializations.find(specialization => specialization.id === specializationId);
+  state.specializations.specializations.find((specialization: { id: number; }) => specialization.id === specializationId);
 export const selectCurrentSpecialization = (state: RootState) => state.specializations.currentSpecialization;
 export const selectSpecializationsStatus = (state: RootState) => state.specializations.status;
 export const selectSpecializationsError = (state: RootState) => state.specializations.error;
