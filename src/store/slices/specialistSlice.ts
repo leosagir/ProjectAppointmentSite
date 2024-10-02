@@ -3,6 +3,7 @@ import { SpecialistResponseDto, SpecialistRequestDto, SpecialistUpdateDto, Speci
 import { RootState } from '../rootReducer';
 import axios from 'axios';
 import api from '../../api/axios';
+import { specialistApi } from '../../api/specialistApi';
 
 interface SpecialistsState {
     specialists: SpecialistResponseDto[];
@@ -108,18 +109,15 @@ export const fetchCurrentSpecialist = createAsyncThunk<SpecialistResponseDto, vo
     'specialists/fetchCurrent',
     async (_, { rejectWithValue }) => {
       try {
-        const response = await api.get('/api/specialists/my');
+        const response = await specialistApi.getCurrentSpecialist();
         return response.data;
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 401) {
-          return rejectWithValue('Unauthorized: Please log in to access this information');
-        }
         return rejectWithValue('Failed to fetch current specialist');
       }
     }
-);
-
-const specialistsSlice = createSlice({
+  );
+  
+  const specialistSlice = createSlice({
     name: 'specialists',
     initialState,
     reducers: {
@@ -162,13 +160,6 @@ const specialistsSlice = createSlice({
                     state.currentSpecialist = null;
                 }
             })
-            .addCase(fetchCurrentSpecialist.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(fetchCurrentSpecialist.fulfilled, (state, action: PayloadAction<SpecialistResponseDto>) => {
-                state.status = 'succeeded';
-                state.currentSpecialist = action.payload;
-            })
             .addCase(deactivateSpecialist.fulfilled, (state, action: PayloadAction<SpecialistResponseDto>) => {
                 const index = state.specialists.findIndex(specialist => specialist.id === action.payload.id);
                 if (index !== -1) {
@@ -187,15 +178,21 @@ const specialistsSlice = createSlice({
                   state.currentSpecialist = action.payload;
                 }
             })
-            .addCase(fetchCurrentSpecialist.rejected, (state, action) => {
+            .addCase(fetchCurrentSpecialist.pending, (state) => {
+                state.status = 'loading';
+              })
+              .addCase(fetchCurrentSpecialist.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.currentSpecialist = action.payload;
+              })
+              .addCase(fetchCurrentSpecialist.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload ?? 'Unknown error occurred';
-                state.currentSpecialist = null;
-            });        
+              });  
     },
 });
 
-export const { resetSpecialistsStatus } = specialistsSlice.actions;
+export const { resetSpecialistsStatus } = specialistSlice.actions;
 
 export const selectAllSpecialists = (state: RootState) => state.specialists.specialists;
 export const selectSpecialistById = (state: RootState, specialistId: number) => 
@@ -204,4 +201,4 @@ export const selectCurrentSpecialist = (state: RootState) => state.specialists.c
 export const selectSpecialistsStatus = (state: RootState) => state.specialists.status;
 export const selectSpecialistsError = (state: RootState) => state.specialists.error;
 
-export default specialistsSlice.reducer;
+export default specialistSlice.reducer;

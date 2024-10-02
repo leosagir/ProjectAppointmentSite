@@ -12,7 +12,7 @@ const api = axios.create({
 
 export const publicApi = {
     registerClient: (data: ClientRequestDto): Promise<AxiosResponse<ClientResponseDto>> => 
-      api.post('/public/client/register', data),
+      api.post('/api/public/client/register', data),
     getAllServices: (): Promise<AxiosResponse<ServiceResponseDto[]>> => 
       api.get('/services'),
     getAllSpecializations: (): Promise<AxiosResponse<SpecializationResponseDto[]>> => 

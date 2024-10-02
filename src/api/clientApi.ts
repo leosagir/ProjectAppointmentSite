@@ -30,15 +30,15 @@ export const clientApi = {
     updateClient: (id: number, data: ClientUpdateDto): Promise<AxiosResponse<ClientResponseDto>> => 
       api.patch(`/clients/${id}`, data),
     getClientAppointments: (): Promise<AxiosResponse<AppointmentResponseDto[]>> => 
-      api.get('/appointments/booked'),
+      api.get('/api/appointments/booked'),
     createReview: (data: ReviewCreateDto): Promise<AxiosResponse<ReviewResponseDto>> => 
         api.post('/reviews', data),
       updateReview: (id: number, data: ReviewUpdateDto): Promise<AxiosResponse<ReviewResponseDto>> => 
         api.put(`/reviews/${id}`, data),
     deleteReview: (id: number): Promise<AxiosResponse<void>> => 
       api.delete(`/reviews/${id}`),
-    getClientNotifications: (): Promise<AxiosResponse<NotificationResponseDto[]>> => 
-      api.get('/notifications/client'),
+    getClientNotifications: (clientId: number): Promise<AxiosResponse<NotificationResponseDto[]>> => 
+      api.get(`/notifications/client/${clientId}`),
     bookAppointment: (id: number, data: AppointmentBookDto): Promise<AxiosResponse<AppointmentResponseDto>> => 
         api.put(`/appointments/${id}/book`, data),
   };

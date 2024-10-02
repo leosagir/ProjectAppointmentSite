@@ -1,36 +1,157 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Route, Routes, Link as RouterLink, useLocation, Navigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '../../store/store';
 import { fetchSpecialists } from '../../store/slices/specialistSlice';
-import SpecialistInfo from './SpecialistInfoProps';
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  IconButton,
+  useTheme,
+  useMediaQuery,
+  Box
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import EventIcon from '@mui/icons-material/Event';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import PersonIcon from '@mui/icons-material/Person';
+
+import SpecialistInfo from './SpecialistInfo';
 import SpecialistAppointments from './SpecialistAppointments';
-import SpecialistServices from './SpecialistServices';
 import SpecialistReviews from './SpecialistReviews';
-import styles from './SpecialistDashboard.module.css'
+
+const drawerWidth = 240;
+
+const menuItems = [
+  { text: 'Моя визитка', icon: <PersonIcon />, path: 'info' },
+  { text: 'Мои встречи', icon: <EventIcon />, path: 'appointments' },
+  { text: 'Отзывы клиентов', icon: <RateReviewIcon />, path: 'reviews' },
+];
 
 const SpecialistDashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const specialist = useSelector((state: RootState) => state.specialists.currentSpecialist);
-  const [activeTab, setActiveTab] = useState('info');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(fetchSpecialists());
   }, [dispatch]);
 
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
+    <Box sx={{ overflow: 'auto' }}>
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6" noWrap component="div">
+          Панель специалиста
+        </Typography>
+      </Box>
+      <List>
+        {menuItems.map((item) => (
+          <ListItemButton
+            key={item.text}
+            component={RouterLink}
+            to={item.path}
+            selected={location.pathname.endsWith(item.path)}
+            onClick={() => isMobile && handleDrawerToggle()}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItemButton>
+        ))}
+      </List>
+    </Box>
+  );
+  
   return (
-    <div className="specialist-dashboard">
-      <h1>Панель специалиста</h1>
-      <nav>
-        <button onClick={() => setActiveTab('info')}>Моя информация</button>
-        <button onClick={() => setActiveTab('appointments')}>Мои записи</button>
-        <button onClick={() => setActiveTab('services')}>Мои услуги</button>
-        <button onClick={() => setActiveTab('reviews')}>Отзывы обо мне</button>
-      </nav>
-      {activeTab === 'info' && <SpecialistInfo specialist={specialist} />}
-      {activeTab === 'appointments' && <SpecialistAppointments />}
-      {activeTab === 'services' && <SpecialistServices />}
-      {activeTab === 'reviews' && <SpecialistReviews />}
-    </div>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column',
+      height: '100%',
+      overflow: 'hidden'
+    }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexGrow: 1,
+        overflow: 'hidden'
+      }}>
+        <Box
+          component="nav"
+          sx={{ 
+            width: { sm: drawerWidth }, 
+            flexShrink: { sm: 0 },
+            display: { xs: 'none', sm: 'block' }
+          }}
+        >
+          <Drawer
+            variant="permanent"
+            sx={{
+              '& .MuiDrawer-paper': { 
+                boxSizing: 'border-box', 
+                width: drawerWidth,
+                position: 'relative',
+                height: '100%'
+              },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+        <Box
+          component="main"
+          sx={{ 
+            flexGrow: 1, 
+            p: 3, 
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            height: '100%',
+            overflow: 'auto'
+          }}
+        >
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mb: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+          <Routes>
+            <Route index element={<Navigate to="info" replace />} />
+            <Route path="info" element={<SpecialistInfo specialist={specialist} />} />
+            <Route path="appointments" element={<SpecialistAppointments />} />
+            <Route path="reviews" element={<SpecialistReviews />} />
+          </Routes>
+        </Box>
+      </Box>
+      {isMobile && (
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      )}
+    </Box>
   );
 };
 

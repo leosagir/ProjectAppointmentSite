@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AppointmentResponseDto, AppointmentCreateDto, AppointmentUpdateDto, AppointmentBookDto } from '../../types/appointment';
 import api from '../../api/axios';
 import { RootState } from '../rootReducer';
+import { specialistApi } from '../../api/specialistApi';
 
 interface AppointmentsState {
   clientAppointments: any;
@@ -21,11 +22,26 @@ const initialState: AppointmentsState = {
   specialistAppointments: undefined
 };
 
+export const fetchSpecialistAppointments = createAsyncThunk<AppointmentResponseDto[], number, { rejectValue: string }>(
+  'appointments/fetchSpecialist',
+  async (specialistId, { rejectWithValue }) => {
+    try {
+      const response = await specialistApi.getSpecialistAppointments(specialistId);
+      console.log('API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching specialist appointments:', error);
+      return rejectWithValue('Failed to fetch specialist appointments');
+    }
+  }
+);
+
 export const fetchAppointments = createAsyncThunk<AppointmentResponseDto[], void, { rejectValue: string }>(
   'appointments/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/api/appointments');
+      console.log('Appointments received from server:', response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch appointments');
@@ -96,8 +112,9 @@ const appointmentsSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchAppointments.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        console.log('Updating appointments in Redux store:', action.payload);
         state.appointments = action.payload;
+        state.status = 'succeeded';
       })
       .addCase(fetchAppointments.rejected, (state, action) => {
         state.status = 'failed';
@@ -129,6 +146,19 @@ const appointmentsSlice = createSlice({
         if (state.currentAppointment?.id === action.payload) {
           state.currentAppointment = null;
         }
+      })
+      .addCase(fetchSpecialistAppointments.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchSpecialistAppointments.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.specialistAppointments = action.payload;
+        console.log('Specialist appointments updated in Redux:', action.payload);
+      })
+      .addCase(fetchSpecialistAppointments.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload ?? 'Unknown error occurred';
+        console.error('Failed to fetch specialist appointments:', action.payload);
       });
   },
 });
@@ -141,5 +171,6 @@ export const selectAppointmentById = (state: RootState, appointmentId: number) =
 export const selectCurrentAppointment = (state: RootState) => state.appointments.currentAppointment;
 export const selectAppointmentsStatus = (state: RootState) => state.appointments.status;
 export const selectAppointmentsError = (state: RootState) => state.appointments.error;
+export const selectSpecialistAppointments = (state: RootState) => state.appointments.specialistAppointments;
 
 export default appointmentsSlice.reducer;

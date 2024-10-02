@@ -2,7 +2,6 @@ import { AppointmentStatus } from "./enum";
 
 export interface AppointmentCreateDto{
     specialistId: number;
-    serviceId: number;
     startTime: string;
     endTime: string;
 }
@@ -23,13 +22,16 @@ export interface AppointmentDto {
 
 export interface AppointmentResponseDto {
     id: number;
+    specialistId: number;
     specialistName: string;
+    clientId: number;
     clientName: string;
+    serviceId: number;
     serviceName: string;
     startTime: string;
     endTime: string;
     appointmentStatus: AppointmentStatus;
-}
+  }
 
 export interface AppointmentUpdateDto {
     specialistId: number;
@@ -40,3 +42,5 @@ export interface AppointmentUpdateDto {
     appointmentStatus: AppointmentStatus;
 }
 
+
+export { AppointmentStatus };

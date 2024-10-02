@@ -4,7 +4,8 @@ import { AppointmentResponseDto } from "../types/appointment";
 import { tokenManager } from '../utils/tokenManager';
 
 const api = axios.create({
-  headers: {
+  baseURL: 'http://localhost:8080', 
+    headers: {
     'Content-Type': 'application/json',
   },
 });
@@ -21,14 +22,18 @@ api.interceptors.request.use(
 );
 
 export const specialistApi = {
-    getCurrentSpecialist: (): Promise<AxiosResponse<SpecialistResponseDto>> => 
-      api.get('/specialists/my'),
+  getCurrentSpecialist: (): Promise<AxiosResponse<SpecialistResponseDto>> => {
+    console.log('Sending request to get current specialist');
+    return api.get('/api/specialists/current');
+  },
     getSpecialistById: (id: number): Promise<AxiosResponse<SpecialistResponseDto>> => 
       api.get(`/specialists/${id}`),
     updateSpecialist: (id: number, data: SpecialistUpdateDto): Promise<AxiosResponse<SpecialistResponseDto>> => 
       api.put(`/specialists/${id}`, data),
-    getSpecialistAppointments: (): Promise<AxiosResponse<AppointmentResponseDto[]>> => 
-      api.get('/appointments/booked'),
+    getSpecialistAppointments: (specialistId: number): Promise<AxiosResponse<AppointmentResponseDto[]>> => {
+      console.log('Sending request to:', `/api/appointments/specialist/${specialistId}`);
+      return api.get(`/api/appointments/specialist/${specialistId}`);
+    },
     getFreeAppointments: (specialistId: number): Promise<AxiosResponse<AppointmentResponseDto[]>> => 
       api.get(`/appointments/free?specialistId=${specialistId}`),
   };

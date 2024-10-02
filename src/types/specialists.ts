@@ -24,7 +24,7 @@ export interface SpecialistResponseDto {
   lastName: string;
   dateOfBirth: string;
   specializations: SpecializationShortDto[];
-  services: ServiceShortDto;
+  services: ServiceShortDto[];
   description: string;
   address: string;
   phone: string;

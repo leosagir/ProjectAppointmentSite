@@ -18,6 +18,7 @@ import Specialists from './pages/Specialist';
 import Services from './pages/Services';
 import About from './pages/About';
 import Appointment from './pages/Appointment';
+import { Box } from '@mui/material';
 
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,10 +26,10 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="App">
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
-        <main>
-        <Routes>
+        <Box component="main" sx={{ flexGrow: 1 }}>
+          <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
@@ -37,7 +38,7 @@ const App: React.FC = () => {
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegistrationForm />} />
             <Route 
-              path="/client-dashboard" 
+              path="/client-dashboard/*" 
               element={
                 <ProtectedRoute 
                   role={UserRole.CLIENT} 
@@ -46,7 +47,7 @@ const App: React.FC = () => {
               } 
             />
             <Route 
-              path="/specialist-dashboard" 
+              path="/specialist-dashboard/*" 
               element={
                 <ProtectedRoute 
                   role={UserRole.SPECIALIST} 
@@ -76,7 +77,7 @@ const App: React.FC = () => {
               />
             )}
           </Routes>
-        </main>
+        </Box>
         <Footer />
         <Modal isOpen={isLoginModalOpen} onClose={() => dispatch(closeLoginModal())}>
           <LoginForm />
@@ -84,7 +85,7 @@ const App: React.FC = () => {
         <Modal isOpen={isRegistrationModalOpen} onClose={() => dispatch(closeRegistrationModal())}>
           <RegistrationForm />
         </Modal>
-      </div>
+      </Box>
     </Router>
   );
 };
