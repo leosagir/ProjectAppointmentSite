@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
 import { clientApi } from '../../api/clientApi';
@@ -14,10 +14,15 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
+import { fetchCurrentClient } from '../../store/slices/clientSlice';
 
 const ClientInfo: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const client = useSelector((state: RootState) => state.clients.currentClient as ClientResponseDto);
+
+  useEffect(() => {
+    dispatch(fetchCurrentClient());
+  }, [dispatch]);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<ClientUpdateDto>({
@@ -53,7 +58,7 @@ const ClientInfo: React.FC = () => {
 
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
-      <Typography variant="h5" gutterBottom>Информация о клиенте</Typography>
+      <Typography variant="h5" gutterBottom>Моя информация</Typography>
       {isEditing ? (
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>

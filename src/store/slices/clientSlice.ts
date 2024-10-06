@@ -29,6 +29,18 @@ export const fetchClients = createAsyncThunk<ClientResponseDto[], void, { reject
   }
 );
 
+export const fetchCurrentClient = createAsyncThunk<ClientResponseDto, void, { rejectValue: string }>(
+  'clients/fetchCurrent',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/clients/my');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to fetch current client');
+    }
+  }
+);
+
 export const fetchClientById = createAsyncThunk<ClientResponseDto, number, { rejectValue: string }>(
   'clients/fetchById',
   async (id, { rejectWithValue }) => {
@@ -100,6 +112,9 @@ const clientsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchCurrentClient.fulfilled, (state, action) => {
+      state.currentClient = action.payload;
+     })
       .addCase(fetchClients.pending, (state) => {
         state.status = 'loading';
       })

@@ -38,6 +38,7 @@ const MonthEvent = ({ event }: { event: any }) => {
       cursor: 'pointer',
     }}>
       {moment(event.start).format('HH:mm')} - {event.title}
+      {event.status === AppointmentStatus.BOOKED && event.clientName && ` - ${event.clientName}`}
     </div>
   );
 };
@@ -72,6 +73,7 @@ const SpecialistAppointments: React.FC = () => {
     start: new Date(appointment.startTime),
     end: new Date(appointment.endTime),
     status: appointment.appointmentStatus,
+    clientName: appointment.clientName,
   })) || [];
 
   const handleSelectEvent = (event: any) => {
@@ -166,7 +168,13 @@ const SpecialistAppointments: React.FC = () => {
                     primary={`${moment(appointment.startTime).format('HH:mm')} - ${moment(
                       appointment.endTime
                     ).format('HH:mm')}`}
-                    secondary={appointment.serviceName}
+                    secondary={
+                      <>
+                        {appointment.serviceName}
+                        {appointment.appointmentStatus === AppointmentStatus.BOOKED && appointment.clientName &&
+                          ` - Клиент: ${appointment.clientName}`}
+                      </>
+                    }
                   />
                   <Chip
                     label={appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Забронировано' : 'Свободно'}

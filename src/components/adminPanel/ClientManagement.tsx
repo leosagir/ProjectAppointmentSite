@@ -10,6 +10,14 @@ import {
   selectClientsStatus,
   selectClientsError
 } from '../../store/slices/clientSlice';
+import {
+  fetchAppointments,
+  bookAppointment,
+  cancelBooking,
+  selectAllAppointments,
+  selectAppointmentsStatus,
+  selectAppointmentsError
+} from '../../store/slices/appointmentsSlice';
 import { ClientResponseDto, ClientUpdateDto, ClientRequestDto } from '../../types/client';
 import { NotificationResponseDto } from '../../types/notification';
 import { AppointmentResponseDto, AppointmentBookDto } from '../../types/appointment';
@@ -28,6 +36,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   Tab,
   Tabs,
@@ -46,14 +55,18 @@ import { AppointmentStatus } from '../../types/enum';
 const ClientManagement: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const clients = useSelector(selectAllClients);
-  const status = useSelector(selectClientsStatus);
-  const error = useSelector(selectClientsError);
+  const clientsStatus = useSelector(selectClientsStatus);
+  const clientsError = useSelector(selectClientsError);
+  const appointments = useSelector(selectAllAppointments);
+  const appointmentsStatus = useSelector(selectAppointmentsStatus);
+  const appointmentsError = useSelector(selectAppointmentsError);
 
   const [selectedClient, setSelectedClient] = useState<ClientResponseDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
   const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState<string>('');
   const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
   const [clientForm, setClientForm] = useState<ClientRequestDto>({
     email: '',
@@ -76,11 +89,14 @@ const ClientManagement: React.FC = () => {
   const [selectedSpecialist, setSelectedSpecialist] = useState<number | null>(null);
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (clientsStatus === 'idle') {
       dispatch(fetchClients());
     }
+    if (appointmentsStatus === 'idle') {
+      dispatch(fetchAppointments());
+    }
     fetchSpecializations();
-  }, [status, dispatch]);
+  }, [clientsStatus, appointmentsStatus, dispatch]);
 
   const fetchSpecializations = async () => {
     try {
@@ -124,13 +140,13 @@ const ClientManagement: React.FC = () => {
     setSelectedClient(client);
     setActiveTab(0);
     try {
-      const appointments = await adminApi.getAllAppointments();
-      const notifications = await adminApi.getAllNotifications();
-      setClientAppointments(appointments.data.filter(app => 
+      const clientAppointments = appointments.filter(app => 
         app.clientId === client.id &&
         app.appointmentStatus === AppointmentStatus.BOOKED
-      ));
-      setClientNotifications(notifications.data.filter(notif => notif.clientId === client.id));
+      );
+      setClientAppointments(clientAppointments);
+      const notifications = await adminApi.getClientNotifications(client.id);
+      setClientNotifications(notifications.data);
     } catch (error) {
       console.error('Error fetching client data:', error);
       setSnackbar({ open: true, message: 'Ошибка при загрузке данных клиента', severity: 'error' });
@@ -175,51 +191,78 @@ const ClientManagement: React.FC = () => {
   };
 
   const handleClientFormSubmit = async () => {
+    setIsClientDialogOpen(false);
+    setConfirmationAction(dialogMode === 'create' ? 'createClient' : 'updateClient');
+    setIsConfirmationDialogOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    setIsConfirmationDialogOpen(false);
     try {
-      if (dialogMode === 'create') {
-        await publicApi.registerClient(clientForm);
-        dispatch(fetchClients());
-        setSnackbar({ open: true, message: 'Клиент успешно создан', severity: 'success' });
-      } else if (dialogMode === 'edit' && selectedClient) {
-        const updateData: ClientUpdateDto = {
-          firstName: clientForm.firstName,
-          lastName: clientForm.lastName,
-          dateOfBirth: clientForm.dateOfBirth,
-          address: clientForm.address,
-          phone: clientForm.phone
-        };
-        await dispatch(updateClient({ id: selectedClient.id, data: updateData }));
-        setSnackbar({ open: true, message: 'Данные клиента обновлены', severity: 'success' });
+      switch (confirmationAction) {
+        case 'createClient':
+          await publicApi.registerClient(clientForm);
+          dispatch(fetchClients());
+          setSnackbar({ open: true, message: 'Клиент успешно создан', severity: 'success' });
+          break;
+        case 'updateClient':
+          if (selectedClient) {
+            const updateData: ClientUpdateDto = {
+              firstName: clientForm.firstName,
+              lastName: clientForm.lastName,
+              dateOfBirth: clientForm.dateOfBirth,
+              address: clientForm.address,
+              phone: clientForm.phone
+            };
+            await dispatch(updateClient({ id: selectedClient.id, data: updateData }));
+            setSnackbar({ open: true, message: 'Данные клиента обновлены', severity: 'success' });
+          }
+          break;
+        case 'deactivateClient':
+          if (selectedClient) {
+            await dispatch(deactivateClient(selectedClient.id));
+            setSnackbar({ open: true, message: 'Клиент деактивирован', severity: 'success' });
+          }
+          break;
+        case 'reactivateClient':
+          if (selectedClient) {
+            await dispatch(reactivateClient(selectedClient.id));
+            setSnackbar({ open: true, message: 'Клиент активирован', severity: 'success' });
+          }
+          break;
+        case 'bookAppointment':
+          if (selectedAppointment && selectedClient) {
+            const bookingData: AppointmentBookDto = {
+              clientId: selectedClient.id
+            };
+            await dispatch(bookAppointment({ id: selectedAppointment.id, data: bookingData }));
+            setIsAppointmentDialogOpen(false);
+            dispatch(fetchAppointments());
+            setSnackbar({ open: true, message: 'Запись успешно забронирована', severity: 'success' });
+          }
+          break;
+        case 'cancelAppointment':
+          if (selectedAppointment) {
+            await dispatch(cancelBooking(selectedAppointment.id));
+            dispatch(fetchAppointments());
+            setSnackbar({ open: true, message: 'Запись отменена', severity: 'success' });
+          }
+          break;
       }
-      setIsClientDialogOpen(false);
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setSnackbar({ open: true, message: 'Ошибка при сохранении данных клиента', severity: 'error' });
+      console.error('Error performing action:', error);
+      setSnackbar({ open: true, message: 'Ошибка при выполнении действия', severity: 'error' });
     }
   };
 
-  const handleDeactivateClient = async () => {
-    if (selectedClient) {
-      try {
-        await dispatch(deactivateClient(selectedClient.id));
-        setSnackbar({ open: true, message: 'Клиент деактивирован', severity: 'success' });
-      } catch (error) {
-        console.error('Error deactivating client:', error);
-        setSnackbar({ open: true, message: 'Ошибка при деактивации клиента', severity: 'error' });
-      }
-    }
+  const handleDeactivateClient = () => {
+    setConfirmationAction('deactivateClient');
+    setIsConfirmationDialogOpen(true);
   };
 
-  const handleReactivateClient = async () => {
-    if (selectedClient) {
-      try {
-        await dispatch(reactivateClient(selectedClient.id));
-        setSnackbar({ open: true, message: 'Клиент активирован', severity: 'success' });
-      } catch (error) {
-        console.error('Error reactivating client:', error);
-        setSnackbar({ open: true, message: 'Ошибка при активации клиента', severity: 'error' });
-      }
-    }
+  const handleReactivateClient = () => {
+    setConfirmationAction('reactivateClient');
+    setIsConfirmationDialogOpen(true);
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -243,8 +286,7 @@ const ClientManagement: React.FC = () => {
     const specialistId = event.target.value as number;
     setSelectedSpecialist(specialistId);
     try {
-      const response = await adminApi.getAllAppointments();
-      const availableAppointments = response.data.filter(
+      const availableAppointments = appointments.filter(
         app => app.appointmentStatus === AppointmentStatus.AVAILABLE && 
                app.specialistId === specialistId
       );
@@ -257,37 +299,22 @@ const ClientManagement: React.FC = () => {
 
   const handleAppointmentSelect = (appointment: AppointmentResponseDto) => {
     setSelectedAppointment(appointment);
+    setConfirmationAction('bookAppointment');
     setIsConfirmationDialogOpen(true);
   };
 
-  const handleConfirmBooking = async () => {
-    if (selectedAppointment && selectedClient) {
-      try {
-        const bookingData: AppointmentBookDto = {
-          clientId: selectedClient.id
-        };
-        await adminApi.bookAppointment(selectedAppointment.id, bookingData);
-        setIsConfirmationDialogOpen(false);
-        setIsAppointmentDialogOpen(false);
-        const appointments = await adminApi.getAllAppointments();
-        setClientAppointments(appointments.data.filter(
-          app => app.clientName === `${selectedClient.lastName} ${selectedClient.firstName}` &&
-                 app.appointmentStatus === AppointmentStatus.BOOKED
-        ));
-        setSnackbar({ open: true, message: 'Запись успешно забронирована', severity: 'success' });
-      } catch (error) {
-        console.error('Error confirming booking:', error);
-        setSnackbar({ open: true, message: 'Ошибка при подтверждении бронирования', severity: 'error' });
-      }
-    }
+  const handleCancelAppointment = (appointment: AppointmentResponseDto) => {
+    setSelectedAppointment(appointment);
+    setConfirmationAction('cancelAppointment');
+    setIsConfirmationDialogOpen(true);
   };
 
-  if (status === 'loading') {
+  if (clientsStatus === 'loading' || appointmentsStatus === 'loading') {
     return <CircularProgress />;
   }
 
-  if (status === 'failed') {
-    return <Typography color="error">{error}</Typography>;
+  if (clientsStatus === 'failed' || appointmentsStatus === 'failed') {
+    return <Typography color="error">{clientsError || appointmentsError}</Typography>;
   }
 
   return (
@@ -347,33 +374,42 @@ const ClientManagement: React.FC = () => {
                 <Typography>Дата рождения: {selectedClient.dateOfBirth}</Typography>
                 <Typography>Адрес: {selectedClient.address}</Typography>
                 <Typography>Телефон: {selectedClient.phone}</Typography>
+                <Typography>Статус: {selectedClient.status}</Typography>
               </Box>
             )}
             {activeTab === 1 && (
-      <Box>
-        <Typography variant="h6" gutterBottom>Записи</Typography>
-        {clientAppointments.length > 0 ? (
-          clientAppointments.map((appointment) => (
-            <Paper key={appointment.id} sx={{ p: 2, mb: 2 }}>
-              <Typography>{`Дата: ${new Date(appointment.startTime).toLocaleString()}`}</Typography>
-              <Typography>{`Услуга: ${appointment.serviceName || 'Не указана'}`}</Typography>
-              <Typography>{`Специалист: ${appointment.specialistName || 'Не указан'}`}</Typography>
-              <Typography>{`Статус: ${appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Забронировано' : 'Свободно'}`}</Typography>
-            </Paper>
-          ))
-        ) : (
-          <Typography>У клиента нет записей</Typography>
-        )}
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleCreateAppointment}
-          sx={{ mt: 2 }}
-        >
-          Забронировать запись
-        </Button>
-      </Box>
-    )}
+              <Box>
+                <Typography variant="h6" gutterBottom>Записи</Typography>
+                {clientAppointments.length > 0 ? (
+                  clientAppointments.map((appointment) => (
+                    <Paper key={appointment.id} sx={{ p: 2, mb: 2 }}>
+                      <Typography>{`Дата: ${new Date(appointment.startTime).toLocaleString()}`}</Typography>
+                      <Typography>{`Услуга: ${appointment.serviceName || 'Не указана'}`}</Typography>
+                      <Typography>{`Специалист: ${appointment.specialistName || 'Не указан'}`}</Typography>
+                      <Typography>{`Статус: ${appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Забронировано' : 'Свободно'}`}</Typography>
+                      <Button 
+                        variant="outlined" 
+                        color="error" 
+                        onClick={() => handleCancelAppointment(appointment)}
+                        sx={{ mt: 1 }}
+                      >
+                        Отменить запись
+                      </Button>
+                    </Paper>
+                  ))
+                ) : (
+                  <Typography>У клиента нет записей</Typography>
+                )}
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  onClick={handleCreateAppointment}
+                  sx={{ mt: 2 }}
+                >
+                  Забронировать запись
+                </Button>
+              </Box>
+            )}
             {activeTab === 2 && (
               <Box>
                 <Typography variant="h6" gutterBottom>Уведомления</Typography>
@@ -383,6 +419,7 @@ const ClientManagement: React.FC = () => {
                       <Typography>{`Дата: ${new Date(notification.sentAt).toLocaleString()}`}</Typography>
                       <Typography>{`Статус: ${notification.status}`}</Typography>
                       <Typography>{`Запись: ${notification.appointmentId}`}</Typography>
+                      <Typography>{`Сообщение: ${notification.message}`}</Typography>
                     </Paper>
                   ))
                 ) : (
@@ -521,23 +558,20 @@ const ClientManagement: React.FC = () => {
       </Dialog>
 
       <Dialog open={isConfirmationDialogOpen} onClose={() => setIsConfirmationDialogOpen(false)}>
-        <DialogTitle>Подтверждение бронирования</DialogTitle>
+        <DialogTitle>Подтверждение действия</DialogTitle>
         <DialogContent>
-          <Typography>
-            Вы подтверждаете бронирование записи:
-            {selectedAppointment && (
-              <>
-                <br />
-                Специалист: {selectedAppointment.specialistName || 'Не указан'}
-                <br />
-                Дата: {new Date(selectedAppointment.startTime).toLocaleString()}
-              </>
-            )}
-          </Typography>
+          <DialogContentText>
+            {confirmationAction === 'createClient' && 'Вы уверены, что хотите создать нового клиента?'}
+            {confirmationAction === 'updateClient' && 'Вы уверены, что хотите обновить данные клиента?'}
+            {confirmationAction === 'deactivateClient' && 'Вы уверены, что хотите деактивировать клиента?'}
+            {confirmationAction === 'reactivateClient' && 'Вы уверены, что хотите активировать клиента?'}
+            {confirmationAction === 'bookAppointment' && 'Вы подтверждаете бронирование записи?'}
+            {confirmationAction === 'cancelAppointment' && 'Вы уверены, что хотите отменить запись?'}
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsConfirmationDialogOpen(false)}>Отмена</Button>
-          <Button onClick={handleConfirmBooking} color="primary">Подтвердить</Button>
+          <Button onClick={handleConfirmAction} color="primary">Подтвердить</Button>
         </DialogActions>
       </Dialog>
 
@@ -559,5 +593,4 @@ const ClientManagement: React.FC = () => {
 };
 
 export default ClientManagement;
-
 

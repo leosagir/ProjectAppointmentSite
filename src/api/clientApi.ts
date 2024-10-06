@@ -24,22 +24,26 @@ api.interceptors.request.use(
 
 export const clientApi = {
     getCurrentClient: (): Promise<AxiosResponse<ClientResponseDto>> => 
-      api.get('/clients/my'),
+      api.get('/api/clients/my'),
     getClientById: (id: number): Promise<AxiosResponse<ClientResponseDto>> => 
-      api.get(`/clients/${id}`),
+      api.get(`/api/clients/${id}`),
     updateClient: (id: number, data: ClientUpdateDto): Promise<AxiosResponse<ClientResponseDto>> => 
-      api.patch(`/clients/${id}`, data),
+      api.patch(`/api/clients/${id}`, data),
     getClientAppointments: (): Promise<AxiosResponse<AppointmentResponseDto[]>> => 
       api.get('/api/appointments/booked'),
     createReview: (data: ReviewCreateDto): Promise<AxiosResponse<ReviewResponseDto>> => 
-        api.post('/reviews', data),
-      updateReview: (id: number, data: ReviewUpdateDto): Promise<AxiosResponse<ReviewResponseDto>> => 
-        api.put(`/reviews/${id}`, data),
+        api.post('/api/reviews', data),
+    updateReview: (id: number, data: ReviewUpdateDto): Promise<AxiosResponse<ReviewResponseDto>> => 
+        api.put(`/api/reviews/${id}`, data),
     deleteReview: (id: number): Promise<AxiosResponse<void>> => 
-      api.delete(`/reviews/${id}`),
+      api.delete(`/api/reviews/${id}`),
+    getClientPastAppointmentsWithoutReview: (): Promise<AxiosResponse<AppointmentResponseDto[]>> => 
+      api.get('/api/appointments/client/past-without-review'),
     getClientNotifications: (clientId: number): Promise<AxiosResponse<NotificationResponseDto[]>> => 
-      api.get(`/notifications/client/${clientId}`),
+      api.get(`/api/notifications/client/${clientId}`),
     bookAppointment: (id: number, data: AppointmentBookDto): Promise<AxiosResponse<AppointmentResponseDto>> => 
-        api.put(`/appointments/${id}/book`, data),
+        api.put(`/api/appointments/${id}/book`, data),
   };
-  
+
+
+

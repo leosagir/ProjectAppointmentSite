@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
-import { fetchClients } from '../../store/slices/clientSlice';
+import { fetchCurrentClient } from '../../store/slices/clientSlice';
 import ClientInfo from './ClientInfo';
 import ClientAppointments from './ClientAppointments';
 import ClientReviews from './ClientReview';
@@ -16,8 +16,8 @@ const ClientDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
-    dispatch(fetchClients());
-  }, [dispatch]);
+    dispatch(fetchCurrentClient());
+  }, [dispatch]); 
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);

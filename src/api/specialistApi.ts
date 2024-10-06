@@ -23,8 +23,8 @@ api.interceptors.request.use(
 
 export const specialistApi = {
   getCurrentSpecialist: (): Promise<AxiosResponse<SpecialistResponseDto>> => {
-    console.log('Sending request to get current specialist');
-    return api.get('/api/specialists/current');
+    console.log('Отправка запроса для получения текущего специалиста');
+    return api.get('/api/specialists/me');
   },
     getSpecialistById: (id: number): Promise<AxiosResponse<SpecialistResponseDto>> => 
       api.get(`/specialists/${id}`),

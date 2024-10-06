@@ -1,24 +1,24 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { ReviewResponseDto, ReviewCreateDto, ReviewUpdateDto } from '../../types/review';
 import api from '../../api/axios';
 import { RootState } from '../store';
 
 interface ReviewsState {
-  specialistReviews: any;
-  clientReviews: any;
-  reviews: ReviewResponseDto[];
+  specialistReviews: ReviewResponseDto[];
+  clientReviews: ReviewResponseDto[];
+  allReviews: ReviewResponseDto[];
   currentReview: ReviewResponseDto | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 const initialState: ReviewsState = {
-  reviews: [],
+  specialistReviews: [],
+  clientReviews: [],
+  allReviews: [],
   currentReview: null,
   status: 'idle',
-  error: null,
-  specialistReviews: undefined,
-  clientReviews: undefined
+  error: null
 };
 
 export const fetchReviews = createAsyncThunk<ReviewResponseDto[], void, { rejectValue: string }>(
@@ -29,6 +29,18 @@ export const fetchReviews = createAsyncThunk<ReviewResponseDto[], void, { reject
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch reviews');
+    }
+  }
+);
+
+export const fetchClientReviews = createAsyncThunk<ReviewResponseDto[], void, { rejectValue: string }>(
+  'reviews/fetchClient',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/reviews/client');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to fetch client reviews');
     }
   }
 );
@@ -83,28 +95,28 @@ const reviewsSlice = createSlice({
       .addCase(fetchReviews.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchReviews.fulfilled, (state, action) => {
+      .addCase(fetchReviews.fulfilled, (state, action: PayloadAction<ReviewResponseDto[]>) => {
         state.status = 'succeeded';
-        state.reviews = action.payload;
+        state.allReviews = action.payload;
       })
       .addCase(fetchReviews.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload ?? 'Unknown error occurred';
       })
-      .addCase(createReview.fulfilled, (state, action) => {
-        state.reviews.push(action.payload);
+      .addCase(createReview.fulfilled, (state, action: PayloadAction<ReviewResponseDto>) => {
+        state.allReviews.push(action.payload);
       })
-      .addCase(updateReview.fulfilled, (state, action) => {
-        const index = state.reviews.findIndex(review => review.id === action.payload.id);
+      .addCase(updateReview.fulfilled, (state, action: PayloadAction<ReviewResponseDto>) => {
+        const index = state.allReviews.findIndex(review => review.id === action.payload.id);
         if (index !== -1) {
-          state.reviews[index] = action.payload;
+          state.allReviews[index] = action.payload;
         }
         if (state.currentReview?.id === action.payload.id) {
           state.currentReview = action.payload;
         }
       })
-      .addCase(deleteReview.fulfilled, (state, action) => {
-        state.reviews = state.reviews.filter(review => review.id !== action.payload);
+      .addCase(deleteReview.fulfilled, (state, action: PayloadAction<number>) => {
+        state.allReviews = state.allReviews.filter(review => review.id !== action.payload);
         if (state.currentReview?.id === action.payload) {
           state.currentReview = null;
         }
@@ -114,9 +126,11 @@ const reviewsSlice = createSlice({
 
 export const { resetReviewsStatus } = reviewsSlice.actions;
 
-export const selectAllReviews = (state: RootState) => state.reviews.reviews;
+export const selectAllReviews = (state: RootState) => state.reviews.allReviews;
+export const selectSpecialistReviews = (state: RootState) => state.reviews.specialistReviews;
+export const selectClientReviews = (state: RootState) => state.reviews.clientReviews;
 export const selectReviewById = (state: RootState, reviewId: number) => 
-  state.reviews.reviews.find((review: { id: number; }) => review.id === reviewId);
+  state.reviews.allReviews.find((review: ReviewResponseDto) => review.id === reviewId);
 export const selectCurrentReview = (state: RootState) => state.reviews.currentReview;
 export const selectReviewsStatus = (state: RootState) => state.reviews.status;
 export const selectReviewsError = (state: RootState) => state.reviews.error;

@@ -1,12 +1,13 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { AppointmentResponseDto, AppointmentCreateDto, AppointmentUpdateDto, AppointmentBookDto } from '../../types/appointment';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { AppointmentResponseDto, AppointmentCreateDto, AppointmentBookDto } from '../../types/appointment';
 import api from '../../api/axios';
 import { RootState } from '../rootReducer';
 import { specialistApi } from '../../api/specialistApi';
 
 interface AppointmentsState {
-  clientAppointments: any;
-  specialistAppointments: any;
+  clientAppointments: AppointmentResponseDto[];  
+  specialistAppointments: AppointmentResponseDto[] | null;
+  freeAppointments: AppointmentResponseDto[];
   appointments: AppointmentResponseDto[];
   currentAppointment: AppointmentResponseDto | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -18,8 +19,9 @@ const initialState: AppointmentsState = {
   currentAppointment: null,
   status: 'idle',
   error: null,
-  clientAppointments: undefined,
-  specialistAppointments: undefined
+  clientAppointments: [],  
+  specialistAppointments: null,
+  freeAppointments: []
 };
 
 export const fetchSpecialistAppointments = createAsyncThunk<AppointmentResponseDto[], number, { rejectValue: string }>(
@@ -27,11 +29,33 @@ export const fetchSpecialistAppointments = createAsyncThunk<AppointmentResponseD
   async (specialistId, { rejectWithValue }) => {
     try {
       const response = await specialistApi.getSpecialistAppointments(specialistId);
-      console.log('API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching specialist appointments:', error);
       return rejectWithValue('Failed to fetch specialist appointments');
+    }
+  }
+);
+
+export const fetchFreeAppointments = createAsyncThunk<AppointmentResponseDto[], number, { rejectValue: string }>(
+  'appointments/fetchFree',
+  async (specialistId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/appointments/free?specialistId=${specialistId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Не удалось загрузить свободные записи');
+    }
+  }
+);
+
+export const fetchClientAppointments = createAsyncThunk<AppointmentResponseDto[], void, { rejectValue: string }>(
+  'appointments/fetchClient',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/appointments/client');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to fetch client appointments');
     }
   }
 );
@@ -41,7 +65,6 @@ export const fetchAppointments = createAsyncThunk<AppointmentResponseDto[], void
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/api/appointments');
-      console.log('Appointments received from server:', response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch appointments');
@@ -61,14 +84,26 @@ export const createAppointment = createAsyncThunk<AppointmentResponseDto, Appoin
   }
 );
 
-export const updateAppointment = createAsyncThunk<AppointmentResponseDto, { id: number; data: AppointmentUpdateDto }, { rejectValue: string }>(
-  'appointments/update',
-  async ({ id, data }, { rejectWithValue }) => {
+export const cancelBooking = createAsyncThunk<AppointmentResponseDto, number, { rejectValue: string }>(
+  'appointments/cancelBooking',
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/api/appointments/${id}`, data);
+      const response = await api.put(`/api/appointments/${id}/cancel-booking`);
       return response.data;
     } catch (error) {
-      return rejectWithValue('Failed to update appointment');
+      return rejectWithValue('Failed to cancel booking');
+    }
+  }
+);
+
+export const fetchClientPastAppointmentsWithoutReview = createAsyncThunk<AppointmentResponseDto[], void, { rejectValue: string }>(
+  'appointments/fetchClientPastWithoutReview',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/appointments/client/past-without-review');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to fetch past appointments without review');
     }
   }
 );
@@ -81,6 +116,18 @@ export const bookAppointment = createAsyncThunk<AppointmentResponseDto, { id: nu
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to book appointment');
+    }
+  }
+);
+
+export const cancelClientAppointment = createAsyncThunk<AppointmentResponseDto, number, { rejectValue: string }>(
+  'appointments/cancelClient',
+  async (appointmentId, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/appointments/${appointmentId}/cancel-client`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to cancel appointment');
     }
   }
 );
@@ -112,7 +159,6 @@ const appointmentsSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchAppointments.fulfilled, (state, action) => {
-        console.log('Updating appointments in Redux store:', action.payload);
         state.appointments = action.payload;
         state.status = 'succeeded';
       })
@@ -123,13 +169,21 @@ const appointmentsSlice = createSlice({
       .addCase(createAppointment.fulfilled, (state, action) => {
         state.appointments.push(action.payload);
       })
-      .addCase(updateAppointment.fulfilled, (state, action) => {
-        const index = state.appointments.findIndex(appointment => appointment.id === action.payload.id);
+      .addCase(fetchClientAppointments.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchClientAppointments.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.clientAppointments = action.payload;
+      })
+      .addCase(fetchClientAppointments.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload ?? 'Unknown error occurred';
+      })
+      .addCase(cancelClientAppointment.fulfilled, (state, action: PayloadAction<AppointmentResponseDto>) => {
+        const index = state.clientAppointments.findIndex(appointment => appointment.id === action.payload.id);
         if (index !== -1) {
-          state.appointments[index] = action.payload;
-        }
-        if (state.currentAppointment?.id === action.payload.id) {
-          state.currentAppointment = action.payload;
+          state.clientAppointments[index] = action.payload;
         }
       })
       .addCase(bookAppointment.fulfilled, (state, action) => {
@@ -153,12 +207,21 @@ const appointmentsSlice = createSlice({
       .addCase(fetchSpecialistAppointments.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.specialistAppointments = action.payload;
-        console.log('Specialist appointments updated in Redux:', action.payload);
       })
       .addCase(fetchSpecialistAppointments.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload ?? 'Unknown error occurred';
-        console.error('Failed to fetch specialist appointments:', action.payload);
+      })
+      .addCase(fetchFreeAppointments.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchFreeAppointments.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.freeAppointments = action.payload;
+      })
+      .addCase(fetchFreeAppointments.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload ?? 'Не удалось загрузить свободные записи';
       });
   },
 });
@@ -172,5 +235,6 @@ export const selectCurrentAppointment = (state: RootState) => state.appointments
 export const selectAppointmentsStatus = (state: RootState) => state.appointments.status;
 export const selectAppointmentsError = (state: RootState) => state.appointments.error;
 export const selectSpecialistAppointments = (state: RootState) => state.appointments.specialistAppointments;
+export const selectFreeAppointments = (state: RootState) => state.appointments.freeAppointments;
 
 export default appointmentsSlice.reducer;

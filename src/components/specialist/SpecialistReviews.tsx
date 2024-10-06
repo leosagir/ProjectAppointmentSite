@@ -1,33 +1,61 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { fetchReviews } from '../../store/slices/reviewsSlice';
+import { fetchReviews, selectReviewsStatus, selectAllReviews } from '../../store/slices/reviewsSlice';
 import { ReviewResponseDto } from '../../types/review';
+import { CircularProgress, Typography, List, ListItem, ListItemText, Rating, Box } from '@mui/material';
 
 const SpecialistReviews: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const reviews = useSelector((state: RootState) => state.reviews.specialistReviews);
+  const reviews = useSelector(selectAllReviews);
+  const status = useSelector(selectReviewsStatus);
 
   useEffect(() => {
-    dispatch(fetchReviews());
-  }, [dispatch]);
+    if (status === 'idle') {
+      dispatch(fetchReviews());
+    }
+  }, [status, dispatch]);
+
+  if (status === 'loading') {
+    return <CircularProgress />;
+  }
+
+  if (status === 'failed') {
+    return <Typography color="error">Не удалось загрузить отзывы. Пожалуйста, попробуйте позже.</Typography>;
+  }
 
   return (
-    <div>
-      <h2>Отзывы обо мне</h2>
+    <Box>
+      <Typography variant="h5" gutterBottom>
+        Отзывы обо мне
+      </Typography>
       {reviews.length === 0 ? (
-        <p>У вас пока нет отзывов.</p>
+        <Typography>У вас пока нет отзывов.</Typography>
       ) : (
-        <ul>
+        <List>
           {reviews.map((review: ReviewResponseDto) => (
-            <li key={review.id}>
-              {review.clientName} - Оценка: {review.rating}
-              <p>{review.comment}</p>
-            </li>
+            <ListItem key={review.id} divider>
+              <ListItemText
+                primary={
+                  <Box display="flex" alignItems="center">
+                    <Typography variant="subtitle1">{review.clientName}</Typography>
+                    <Rating value={review.rating} readOnly sx={{ ml: 2 }} />
+                  </Box>
+                }
+                secondary={
+                  <>
+                    <Typography variant="body2" color="text.secondary">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body1">{review.comment}</Typography>
+                  </>
+                }
+              />
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Box>
   );
 };
 

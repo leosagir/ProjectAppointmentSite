@@ -6,6 +6,7 @@ export interface NotificationRequestDto {
 }
 
 export interface NotificationResponseDto {
+    message: any;
     id: number;
     clientId: number;
     clientFullName: string;
