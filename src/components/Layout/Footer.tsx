@@ -1,36 +1,78 @@
-import React from "react";
-import { Link } from 'react-router-dom';
-import styles from './Footer.module.css';
+import React from 'react';
+import { 
+  Box, 
+  Container, 
+  Grid, 
+  Typography, 
+  Link,
+  IconButton
+} from '@mui/material';
+import { Facebook, Instagram, Twitter } from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Footer: React.FC = () => {
-    return (
-        <footer className={styles.footer}>
-            <div className={styles.footerContent}>
-                <div className={styles.footerSection}>
-                    <h3>О нас</h3>
-                    <p>Мы предоставляем высококачественные стоматологические услуги для всей семьи.</p>
-                </div>
-                <div className={styles.footerSection}>
-                    <h3>Быстрые ссылки</h3>
-                    <ul>
-                        <li><Link to="/" className={styles.footerLink}>Главная</Link></li>
-                        <li><Link to="/services" className={styles.footerLink}>Услуги</Link></li>
-                        <li><Link to="/specialists" className={styles.footerLink}>Специалисты</Link></li>
-                        <li><Link to="/appointment" className={styles.footerLink}>Записаться</Link></li>
-                    </ul>
-                </div>
-                <div className={styles.footerSection}>
-                    <h3>Контакты</h3>
-                    <p>Адрес: ул. Примерная, 123</p>
-                    <p>Телефон: +7 (123) 456-78-90</p>
-                    <p>Email: info@example.com</p>
-                </div>
-            </div>
-            <div className={styles.copyright}>
-                © 2023 Ваша Стоматологическая Клиника. Все права защищены.
-            </div>
-        </footer>
-    );
+  return (
+    <Box
+      component="footer"
+      sx={{
+        bgcolor: 'primary.main',
+        color: 'white',
+        py: 6,
+      }}
+    >
+      <Container maxWidth="lg">
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Über uns
+            </Typography>
+            <Typography variant="body2">
+              ZahnKlinik - eine moderne Zahnklinik, 
+              die ein umfassendes Spektrum an Dienstleistungen für Ihr Lächeln anbietet.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Kontakt
+            </Typography>
+            <Typography variant="body2">
+              Adresse: Musterstraße 123, 12345 Berlin
+            </Typography>
+            <Typography variant="body2">
+              Telefon: +49 (123) 456-78-90
+            </Typography>
+            <Typography variant="body2">
+              E-Mail: info@zahnklinik.de
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Folgen Sie uns
+            </Typography>
+            <IconButton color="inherit" aria-label="Facebook">
+              <Facebook />
+            </IconButton>
+            <IconButton color="inherit" aria-label="Instagram">
+              <Instagram />
+            </IconButton>
+            <IconButton color="inherit" aria-label="Twitter">
+              <Twitter />
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Box mt={5}>
+          <Typography variant="body2" align="center">
+            {'Copyright © '}
+            <Link color="inherit" component={RouterLink} to="/">
+              ZahnKlinik
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+          </Typography>
+        </Box>
+      </Container>
+    </Box>
+  );
 };
 
 export default Footer;

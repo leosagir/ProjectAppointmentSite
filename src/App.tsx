@@ -14,10 +14,10 @@ import Modal from './components/Modal/Modal';
 import { closeLoginModal, closeRegistrationModal } from './store/slices/authSlice';
 import RegistrationForm from './components/auth/RegistrationForm';
 import LoginForm from './components/auth/LoginForm';
-import Specialists from './pages/Specialist';
-import Services from './pages/Services';
 import About from './pages/About';
-import Appointment from './pages/Appointment';
+import Contact from './pages/Contact';
+import Blog from './pages/Blog';
+
 import { Box } from '@mui/material';
 
 const App: React.FC = () => {
@@ -32,9 +32,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/specialists" element={<Specialists />} />
-            <Route path="/appointment" element={<Appointment />} />
+            <Route path="/contact" element={<Contact/>} />
+            <Route path="/blog" element={<Blog/>} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegistrationForm />} />
             <Route 
@@ -72,7 +71,7 @@ const App: React.FC = () => {
                     ? <Navigate to="/admin" />
                     : user?.role === UserRole.SPECIALIST
                     ? <Navigate to="/specialist-dashboard" />
-                    : <Navigate to="/client-dashboard" />
+                    : <Navigate to="/client-dashboard/appointments" />
                 } 
               />
             )}
