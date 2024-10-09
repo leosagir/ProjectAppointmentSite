@@ -5,6 +5,7 @@ import { SpecializationResponseDto } from "../types/specialization";
 import { SpecialistResponseDto } from "../types/specialists";
 
 const api = axios.create({
+  baseURL: 'https://my-appointment-system-fe5cb7ef8f3f.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   },

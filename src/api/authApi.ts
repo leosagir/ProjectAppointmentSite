@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '../store/store';
 import { setToken } from '../store/slices/authSlice';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'https://my-appointment-system-fe5cb7ef8f3f.herokuapp.com';
 
  export const loginApi = async (email: string, password: string) => {
     

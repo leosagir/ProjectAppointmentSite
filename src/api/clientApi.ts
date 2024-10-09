@@ -6,6 +6,7 @@ import { NotificationResponseDto } from "../types/notification";
 import { tokenManager } from '../utils/tokenManager';
 
 const api = axios.create({
+  baseURL: 'https://my-appointment-system-fe5cb7ef8f3f.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   },

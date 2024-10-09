@@ -12,7 +12,7 @@ import { refreshTokenThunk } from '../store/slices/authSlice';
 import store from '../store/store';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://my-appointment-system-fe5cb7ef8f3f.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   },

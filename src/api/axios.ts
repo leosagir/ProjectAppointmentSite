@@ -7,7 +7,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000', // Измените на ваш базовый URL
+  baseURL: 'https://my-appointment-system-fe5cb7ef8f3f.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   },
