@@ -103,8 +103,8 @@ const ClientManagement: React.FC = () => {
       const response = await adminApi.getAllSpecializations();
       setSpecializations(response.data);
     } catch (error) {
-      console.error('Error fetching specializations:', error);
-      setSnackbar({ open: true, message: 'Ошибка при загрузке специализаций', severity: 'error' });
+      console.error('Fehler beim Laden der Spezialisierungen:', error);
+      setSnackbar({ open: true, message: 'Fehler beim Laden der Spezialisierungen', severity: 'error' });
     }
   };
 
@@ -122,8 +122,8 @@ const ClientManagement: React.FC = () => {
       );
       setSpecialists(filteredSpecialists);
     } catch (error) {
-      console.error('Error fetching specialists:', error);
-      setSnackbar({ open: true, message: 'Ошибка при загрузке специалистов', severity: 'error' });
+      console.error('Fehler beim Laden der Spezialisten:', error);
+      setSnackbar({ open: true, message: 'Fehler beim Laden der Spezialisten', severity: 'error' });
     }
   };
 
@@ -148,8 +148,8 @@ const ClientManagement: React.FC = () => {
       const notifications = await adminApi.getClientNotifications(client.id);
       setClientNotifications(notifications.data);
     } catch (error) {
-      console.error('Error fetching client data:', error);
-      setSnackbar({ open: true, message: 'Ошибка при загрузке данных клиента', severity: 'error' });
+      console.error('Fehler beim Laden der Kundendaten:', error);
+      setSnackbar({ open: true, message: 'Fehler beim Laden der Kundendaten', severity: 'error' });
     }
   };
 
@@ -203,7 +203,7 @@ const ClientManagement: React.FC = () => {
         case 'createClient':
           await publicApi.registerClient(clientForm);
           dispatch(fetchClients());
-          setSnackbar({ open: true, message: 'Клиент успешно создан', severity: 'success' });
+          setSnackbar({ open: true, message: 'Kunde erfolgreich erstellt', severity: 'success' });
           break;
         case 'updateClient':
           if (selectedClient) {
@@ -215,19 +215,19 @@ const ClientManagement: React.FC = () => {
               phone: clientForm.phone
             };
             await dispatch(updateClient({ id: selectedClient.id, data: updateData }));
-            setSnackbar({ open: true, message: 'Данные клиента обновлены', severity: 'success' });
+            setSnackbar({ open: true, message: 'Kundendaten aktualisiert', severity: 'success' });
           }
           break;
         case 'deactivateClient':
           if (selectedClient) {
             await dispatch(deactivateClient(selectedClient.id));
-            setSnackbar({ open: true, message: 'Клиент деактивирован', severity: 'success' });
+            setSnackbar({ open: true, message: 'Kunde deaktiviert', severity: 'success' });
           }
           break;
         case 'reactivateClient':
           if (selectedClient) {
             await dispatch(reactivateClient(selectedClient.id));
-            setSnackbar({ open: true, message: 'Клиент активирован', severity: 'success' });
+            setSnackbar({ open: true, message: 'Kunde aktiviert', severity: 'success' });
           }
           break;
         case 'bookAppointment':
@@ -238,20 +238,20 @@ const ClientManagement: React.FC = () => {
             await dispatch(bookAppointment({ id: selectedAppointment.id, data: bookingData }));
             setIsAppointmentDialogOpen(false);
             dispatch(fetchAppointments());
-            setSnackbar({ open: true, message: 'Запись успешно забронирована', severity: 'success' });
+            setSnackbar({ open: true, message: 'Termin erfolgreich gebucht', severity: 'success' });
           }
           break;
         case 'cancelAppointment':
           if (selectedAppointment) {
             await dispatch(cancelBooking(selectedAppointment.id));
             dispatch(fetchAppointments());
-            setSnackbar({ open: true, message: 'Запись отменена', severity: 'success' });
+            setSnackbar({ open: true, message: 'Termin storniert', severity: 'success' });
           }
           break;
       }
     } catch (error) {
-      console.error('Error performing action:', error);
-      setSnackbar({ open: true, message: 'Ошибка при выполнении действия', severity: 'error' });
+      console.error('Fehler bei der Ausführung der Aktion:', error);
+      setSnackbar({ open: true, message: 'Fehler bei der Ausführung der Aktion', severity: 'error' });
     }
   };
 
@@ -292,8 +292,8 @@ const ClientManagement: React.FC = () => {
       );
       setAvailableAppointments(availableAppointments);
     } catch (error) {
-      console.error('Error fetching available appointments:', error);
-      setSnackbar({ open: true, message: 'Ошибка при загрузке доступных записей', severity: 'error' });
+      console.error('Fehler beim Laden der verfügbaren Termine:', error);
+      setSnackbar({ open: true, message: 'Fehler beim Laden der verfügbaren Termine', severity: 'error' });
     }
   };
 
@@ -319,11 +319,11 @@ const ClientManagement: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
-      {/* Left sidebar with client list */}
+      {/* Linke Seitenleiste mit Kundenliste */}
       <Paper sx={{ width: 300, overflow: 'auto', p: 2 }}>
-        <Typography variant="h6" gutterBottom>Клиенты</Typography>
+        <Typography variant="h6" gutterBottom>Kunden</Typography>
         <TextField
-          label="Поиск клиента"
+          label="Kunde suchen"
           variant="outlined"
           fullWidth
           margin="normal"
@@ -337,7 +337,7 @@ const ClientManagement: React.FC = () => {
           fullWidth 
           sx={{ mt: 2, mb: 2 }}
         >
-          Создать клиента
+          Neuen Kunden erstellen
         </Button>
         <List>
           {filteredClients.map((client) => (
@@ -352,53 +352,53 @@ const ClientManagement: React.FC = () => {
         </List>
       </Paper>
 
-      {/* Main content area */}
+      {/* Hauptinhaltsbereich */}
       <Box sx={{ flexGrow: 1, p: 2, overflow: 'auto' }}>
         {selectedClient ? (
           <>
             <Typography variant="h5" gutterBottom>{`${selectedClient.lastName} ${selectedClient.firstName}`}</Typography>
-            <Button variant="outlined" onClick={handleEditClient} sx={{ mr: 1 }}>Редактировать</Button>
+            <Button variant="outlined" onClick={handleEditClient} sx={{ mr: 1 }}>Bearbeiten</Button>
             {selectedClient.status === 'ACTIVE' ? (
-              <Button variant="outlined" color="error" onClick={handleDeactivateClient}>Деактивировать</Button>
+              <Button variant="outlined" color="error" onClick={handleDeactivateClient}>Deaktivieren</Button>
             ) : (
-              <Button variant="outlined" color="success" onClick={handleReactivateClient}>Активировать</Button>
+              <Button variant="outlined" color="success" onClick={handleReactivateClient}>Aktivieren</Button>
             )}
             <Tabs value={activeTab} onChange={handleTabChange} sx={{ mt: 2, mb: 2 }}>
-              <Tab label="Информация" />
-              <Tab label="Записи" />
-              <Tab label="Уведомления" />
+              <Tab label="Informationen" />
+              <Tab label="Termine" />
+              <Tab label="Benachrichtigungen" />
             </Tabs>
             {activeTab === 0 && (
               <Box>
-                <Typography>Email: {selectedClient.email}</Typography>
-                <Typography>Дата рождения: {selectedClient.dateOfBirth}</Typography>
-                <Typography>Адрес: {selectedClient.address}</Typography>
-                <Typography>Телефон: {selectedClient.phone}</Typography>
-                <Typography>Статус: {selectedClient.status}</Typography>
+                <Typography>E-Mail: {selectedClient.email}</Typography>
+                <Typography>Geburtsdatum: {selectedClient.dateOfBirth}</Typography>
+                <Typography>Adresse: {selectedClient.address}</Typography>
+                <Typography>Telefon: {selectedClient.phone}</Typography>
+                <Typography>Status: {selectedClient.status}</Typography>
               </Box>
             )}
             {activeTab === 1 && (
               <Box>
-                <Typography variant="h6" gutterBottom>Записи</Typography>
+                <Typography variant="h6" gutterBottom>Termine</Typography>
                 {clientAppointments.length > 0 ? (
                   clientAppointments.map((appointment) => (
                     <Paper key={appointment.id} sx={{ p: 2, mb: 2 }}>
-                      <Typography>{`Дата: ${new Date(appointment.startTime).toLocaleString()}`}</Typography>
-                      <Typography>{`Услуга: ${appointment.serviceName || 'Не указана'}`}</Typography>
-                      <Typography>{`Специалист: ${appointment.specialistName || 'Не указан'}`}</Typography>
-                      <Typography>{`Статус: ${appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Забронировано' : 'Свободно'}`}</Typography>
+                      <Typography>{`Datum: ${new Date(appointment.startTime).toLocaleString()}`}</Typography>
+                      <Typography>{`Dienstleistung: ${appointment.serviceName || 'Nicht angegeben'}`}</Typography>
+                      <Typography>{`Spezialist: ${appointment.specialistName || 'Nicht angegeben'}`}</Typography>
+                      <Typography>{`Status: ${appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Gebucht' : 'Verfügbar'}`}</Typography>
                       <Button 
                         variant="outlined" 
                         color="error" 
                         onClick={() => handleCancelAppointment(appointment)}
                         sx={{ mt: 1 }}
                       >
-                        Отменить запись
+                        Termin stornieren
                       </Button>
                     </Paper>
                   ))
                 ) : (
-                  <Typography>У клиента нет записей</Typography>
+                  <Typography>Der Kunde hat keine Termine</Typography>
                 )}
                 <Button 
                   variant="contained" 
@@ -406,42 +406,42 @@ const ClientManagement: React.FC = () => {
                   onClick={handleCreateAppointment}
                   sx={{ mt: 2 }}
                 >
-                  Забронировать запись
+                  Termin buchen
                 </Button>
               </Box>
             )}
             {activeTab === 2 && (
               <Box>
-                <Typography variant="h6" gutterBottom>Уведомления</Typography>
+                <Typography variant="h6" gutterBottom>Benachrichtigungen</Typography>
                 {clientNotifications.length > 0 ? (
                   clientNotifications.map((notification) => (
                     <Paper key={notification.id} sx={{ p: 2, mb: 2 }}>
-                      <Typography>{`Дата: ${new Date(notification.sentAt).toLocaleString()}`}</Typography>
-                      <Typography>{`Статус: ${notification.status}`}</Typography>
-                      <Typography>{`Запись: ${notification.appointmentId}`}</Typography>
-                      <Typography>{`Сообщение: ${notification.message}`}</Typography>
+                      <Typography>{`Datum: ${new Date(notification.sentAt).toLocaleString()}`}</Typography>
+                      <Typography>{`Status: ${notification.status}`}</Typography>
+                      <Typography>{`Termin: ${notification.appointmentId}`}</Typography>
+                      <Typography>{`Nachricht: ${notification.message}`}</Typography>
                     </Paper>
                   ))
                 ) : (
-                  <Typography>У клиента нет уведомлений</Typography>
+                  <Typography>Der Kunde hat keine Benachrichtigungen</Typography>
                 )}
               </Box>
             )}
           </>
         ) : (
-          <Typography>Выберите клиента из списка</Typography>
+          <Typography>Bitte wählen Sie einen Kunden aus der Liste</Typography>
         )}
       </Box>
 
-      {/* Dialogs */}
+      {/* Dialoge */}
       <Dialog open={isClientDialogOpen} onClose={() => setIsClientDialogOpen(false)}>
-        <DialogTitle>{dialogMode === 'create' ? 'Создать клиента' : 'Редактировать клиента'}</DialogTitle>
+        <DialogTitle>{dialogMode === 'create' ? 'Neuen Kunden erstellen' : 'Kunden bearbeiten'}</DialogTitle>
         <DialogContent>
           {dialogMode === 'create' && (
             <>
               <TextField
                 name="email"
-                label="Email"
+                label="E-Mail"
                 fullWidth
                 margin="normal"
                 value={clientForm.email}
@@ -449,7 +449,7 @@ const ClientManagement: React.FC = () => {
               />
               <TextField
                 name="password"
-                label="Пароль"
+                label="Passwort"
                 type="password"
                 fullWidth
                 margin="normal"
@@ -460,7 +460,7 @@ const ClientManagement: React.FC = () => {
           )}
           <TextField
             name="firstName"
-            label="Имя"
+            label="Vorname"
             fullWidth
             margin="normal"
             value={clientForm.firstName}
@@ -468,7 +468,7 @@ const ClientManagement: React.FC = () => {
           />
           <TextField
             name="lastName"
-            label="Фамилия"
+            label="Nachname"
             fullWidth
             margin="normal"
             value={clientForm.lastName}
@@ -476,7 +476,7 @@ const ClientManagement: React.FC = () => {
           />
           <TextField
             name="dateOfBirth"
-            label="Дата рождения"
+            label="Geburtsdatum"
             type="date"
             fullWidth
             margin="normal"
@@ -486,7 +486,7 @@ const ClientManagement: React.FC = () => {
           />
           <TextField
             name="address"
-            label="Адрес"
+            label="Adresse"
             fullWidth
             margin="normal"
             value={clientForm.address}
@@ -494,7 +494,7 @@ const ClientManagement: React.FC = () => {
           />
           <TextField
             name="phone"
-            label="Телефон"
+            label="Telefon"
             fullWidth
             margin="normal"
             value={clientForm.phone}
@@ -502,18 +502,18 @@ const ClientManagement: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsClientDialogOpen(false)}>Отмена</Button>
+          <Button onClick={() => setIsClientDialogOpen(false)}>Abbrechen</Button>
           <Button onClick={handleClientFormSubmit} color="primary">
-            {dialogMode === 'create' ? 'Создать' : 'Сохранить'}
+            {dialogMode === 'create' ? 'Erstellen' : 'Speichern'}
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={isAppointmentDialogOpen} onClose={() => setIsAppointmentDialogOpen(false)}>
-        <DialogTitle>Забронировать запись</DialogTitle>
+        <DialogTitle>Termin buchen</DialogTitle>
         <DialogContent>
           <FormControl fullWidth margin="normal">
-            <InputLabel>Специализация</InputLabel>
+            <InputLabel>Spezialisierung</InputLabel>
             <Select
               value={selectedSpecialization || ''}
               onChange={handleSpecializationChange}
@@ -525,7 +525,7 @@ const ClientManagement: React.FC = () => {
           </FormControl>
           {selectedSpecialization && (
             <FormControl fullWidth margin="normal">
-              <InputLabel>Специалист</InputLabel>
+              <InputLabel>Spezialist</InputLabel>
               <Select
                 value={selectedSpecialist || ''}
                 onChange={handleSpecialistChange}
@@ -544,8 +544,8 @@ const ClientManagement: React.FC = () => {
                   onClick={() => handleAppointmentSelect(appointment)}
                 >
                   <ListItemText 
-                    primary={`Специалист: ${appointment.specialistName || 'Не указан'}`}
-                    secondary={`Дата: ${new Date(appointment.startTime).toLocaleString()} - ${new Date(appointment.endTime).toLocaleString()}`}
+                    primary={`Spezialist: ${appointment.specialistName || 'Nicht angegeben'}`}
+                    secondary={`Datum: ${new Date(appointment.startTime).toLocaleString()} - ${new Date(appointment.endTime).toLocaleString()}`}
                   />
                 </ListItemButton>
               ))}
@@ -553,25 +553,25 @@ const ClientManagement: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsAppointmentDialogOpen(false)}>Отмена</Button>
+          <Button onClick={() => setIsAppointmentDialogOpen(false)}>Abbrechen</Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={isConfirmationDialogOpen} onClose={() => setIsConfirmationDialogOpen(false)}>
-        <DialogTitle>Подтверждение действия</DialogTitle>
+        <DialogTitle>Aktion bestätigen</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {confirmationAction === 'createClient' && 'Вы уверены, что хотите создать нового клиента?'}
-            {confirmationAction === 'updateClient' && 'Вы уверены, что хотите обновить данные клиента?'}
-            {confirmationAction === 'deactivateClient' && 'Вы уверены, что хотите деактивировать клиента?'}
-            {confirmationAction === 'reactivateClient' && 'Вы уверены, что хотите активировать клиента?'}
-            {confirmationAction === 'bookAppointment' && 'Вы подтверждаете бронирование записи?'}
-            {confirmationAction === 'cancelAppointment' && 'Вы уверены, что хотите отменить запись?'}
+            {confirmationAction === 'createClient' && 'Sind Sie sicher, dass Sie einen neuen Kunden erstellen möchten?'}
+            {confirmationAction === 'updateClient' && 'Sind Sie sicher, dass Sie die Kundendaten aktualisieren möchten?'}
+            {confirmationAction === 'deactivateClient' && 'Sind Sie sicher, dass Sie den Kunden deaktivieren möchten?'}
+            {confirmationAction === 'reactivateClient' && 'Sind Sie sicher, dass Sie den Kunden aktivieren möchten?'}
+            {confirmationAction === 'bookAppointment' && 'Bestätigen Sie die Terminbuchung?'}
+            {confirmationAction === 'cancelAppointment' && 'Sind Sie sicher, dass Sie den Termin stornieren möchten?'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsConfirmationDialogOpen(false)}>Отмена</Button>
-          <Button onClick={handleConfirmAction} color="primary">Подтвердить</Button>
+          <Button onClick={() => setIsConfirmationDialogOpen(false)}>Abbrechen</Button>
+          <Button onClick={handleConfirmAction} color="primary">Bestätigen</Button>
         </DialogActions>
       </Dialog>
 
@@ -593,4 +593,3 @@ const ClientManagement: React.FC = () => {
 };
 
 export default ClientManagement;
-

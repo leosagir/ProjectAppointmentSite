@@ -13,7 +13,7 @@ const NotificationManagement: React.FC = () => {
 
   return (
     <div>
-      <h2>Управление уведомлениями</h2>
+      <h2>Benachrichtigungsverwaltung</h2>
       <ul>
         {notifications.map(notification => (
           <li key={notification.id}>

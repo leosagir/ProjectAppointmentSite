@@ -27,9 +27,9 @@ import SpecialistReviews from './SpecialistReviews';
 const drawerWidth = 240;
 
 const menuItems = [
-  { text: 'Моя визитка', icon: <PersonIcon />, path: 'info' },
-  { text: 'Мои встречи', icon: <EventIcon />, path: 'appointments' },
-  { text: 'Отзывы клиентов', icon: <RateReviewIcon />, path: 'reviews' },
+  { text: 'Mein Profil', icon: <PersonIcon />, path: 'info' },
+  { text: 'Meine Termine', icon: <EventIcon />, path: 'appointments' },
+  { text: 'Patientenbewertungen', icon: <RateReviewIcon />, path: 'reviews' },
 ];
 
 const SpecialistDashboard: React.FC = () => {
@@ -52,7 +52,7 @@ const SpecialistDashboard: React.FC = () => {
     <Box sx={{ overflow: 'auto' }}>
       <Box sx={{ p: 2 }}>
         <Typography variant="h6" noWrap component="div">
-          Панель специалиста
+          Arztportal
         </Typography>
       </Box>
       <List>
@@ -74,6 +74,7 @@ const SpecialistDashboard: React.FC = () => {
   
   return (
     <Box sx={{ 
+      paddingTop: '64px',
       display: 'flex', 
       flexDirection: 'column',
       height: '100%',
@@ -120,7 +121,7 @@ const SpecialistDashboard: React.FC = () => {
           {isMobile && (
             <IconButton
               color="inherit"
-              aria-label="open drawer"
+              aria-label="Menü öffnen"
               edge="start"
               onClick={handleDrawerToggle}
               sx={{ mb: 2 }}
@@ -142,7 +143,7 @@ const SpecialistDashboard: React.FC = () => {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, 
           }}
           sx={{
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

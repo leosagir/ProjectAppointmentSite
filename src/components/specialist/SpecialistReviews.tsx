@@ -21,16 +21,16 @@ const SpecialistReviews: React.FC = () => {
   }
 
   if (status === 'failed') {
-    return <Typography color="error">Не удалось загрузить отзывы. Пожалуйста, попробуйте позже.</Typography>;
+    return <Typography color="error">Bewertungen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.</Typography>;
   }
 
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        Отзывы обо мне
+        Meine Bewertungen
       </Typography>
       {reviews.length === 0 ? (
-        <Typography>У вас пока нет отзывов.</Typography>
+        <Typography>Sie haben noch keine Bewertungen.</Typography>
       ) : (
         <List>
           {reviews.map((review: ReviewResponseDto) => (

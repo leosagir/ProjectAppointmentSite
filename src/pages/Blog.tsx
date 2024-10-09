@@ -233,7 +233,7 @@ const Blog: React.FC = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ paddingTop: '64px' }}>
       <Container sx={{ py: 8 }}>
         <Typography variant="h2" component="h1" align="center" gutterBottom>
           Zahnmedizinischer Blog

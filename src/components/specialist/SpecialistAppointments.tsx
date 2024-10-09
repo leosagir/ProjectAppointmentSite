@@ -24,7 +24,7 @@ import {
 const localizer = momentLocalizer(moment);
 
 const MonthEvent = ({ event }: { event: any }) => {
-  console.log('Rendering MonthEvent:', event);
+  console.log('Rendere MonatsEvent:', event);
   return (
     <div style={{
       backgroundColor: event.status === AppointmentStatus.BOOKED ? '#f44336' : '#2196f3',
@@ -44,7 +44,6 @@ const MonthEvent = ({ event }: { event: any }) => {
 };
 
 const SpecialistAppointments: React.FC = () => {
-  
   const dispatch = useDispatch<AppDispatch>();
   const currentSpecialist = useSelector(selectCurrentSpecialist);
   const specialistAppointments = useSelector(selectSpecialistAppointments);
@@ -55,7 +54,7 @@ const SpecialistAppointments: React.FC = () => {
     dispatch(fetchCurrentSpecialist())
       .unwrap()
       .then((specialist) => {
-        console.log('Current specialist:', specialist);
+        console.log('Aktueller Spezialist:', specialist);
         if (specialist && specialist.id) {
           dispatch(fetchSpecialistAppointments(specialist.id));
         }
@@ -64,12 +63,12 @@ const SpecialistAppointments: React.FC = () => {
   }, [dispatch]);
   
   useEffect(() => {
-    console.log('Specialist appointments from Redux:', specialistAppointments);
+    console.log('Spezialist Termine aus Redux:', specialistAppointments);
   }, [specialistAppointments]);
 
   const events = specialistAppointments?.map((appointment: AppointmentResponseDto) => ({
     id: appointment.id,
-    title: appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Забронировано' : 'Свободно',
+    title: appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Gebucht' : 'Verfügbar',
     start: new Date(appointment.startTime),
     end: new Date(appointment.endTime),
     status: appointment.appointmentStatus,
@@ -77,7 +76,7 @@ const SpecialistAppointments: React.FC = () => {
   })) || [];
 
   const handleSelectEvent = (event: any) => {
-    console.log('Selected event:', event);
+    console.log('Ausgewähltes Event:', event);
     setSelectedDate(event.start);
     setOpenDialog(true);
   };
@@ -114,7 +113,6 @@ const SpecialistAppointments: React.FC = () => {
     };
   };
 
-  // Устанавливаем начало и конец рабочего дня
   const minTime = new Date();
   minTime.setHours(7, 0, 0);
   const maxTime = new Date();
@@ -123,7 +121,7 @@ const SpecialistAppointments: React.FC = () => {
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h4" gutterBottom>
-        Записи специалиста
+        Termine des Spezialisten
       </Typography>
       <Box sx={{ flexGrow: 1 }}>
         <Calendar
@@ -157,7 +155,7 @@ const SpecialistAppointments: React.FC = () => {
       </Box>
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
-          Записи на {selectedDate && moment(selectedDate).format('DD.MM.YYYY')}
+          Termine am {selectedDate && moment(selectedDate).format('DD.MM.YYYY')}
         </DialogTitle>
         <DialogContent>
           <List>
@@ -172,12 +170,12 @@ const SpecialistAppointments: React.FC = () => {
                       <>
                         {appointment.serviceName}
                         {appointment.appointmentStatus === AppointmentStatus.BOOKED && appointment.clientName &&
-                          ` - Клиент: ${appointment.clientName}`}
+                          ` - Patient: ${appointment.clientName}`}
                       </>
                     }
                   />
                   <Chip
-                    label={appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Забронировано' : 'Свободно'}
+                    label={appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Gebucht' : 'Verfügbar'}
                     color={appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'error' : 'primary'}
                   />
                 </ListItem>
@@ -185,7 +183,7 @@ const SpecialistAppointments: React.FC = () => {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Закрыть</Button>
+          <Button onClick={handleCloseDialog}>Schließen</Button>
         </DialogActions>
       </Dialog>
     </Box>

@@ -84,14 +84,14 @@ const ServiceManagement: React.FC = () => {
     try {
       if (selectedService) {
         await dispatch(updateService({ id: selectedService.id, data: formData as ServiceUpdateDto })).unwrap();
-        setSnackbar({ open: true, message: 'Услуга успешно обновлена', severity: 'success' });
+        setSnackbar({ open: true, message: 'Dienstleistung erfolgreich aktualisiert', severity: 'success' });
       } else {
         await dispatch(createService(formData)).unwrap();
-        setSnackbar({ open: true, message: 'Услуга успешно создана', severity: 'success' });
+        setSnackbar({ open: true, message: 'Dienstleistung erfolgreich erstellt', severity: 'success' });
       }
       handleCloseDialog();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Не удалось сохранить услугу', severity: 'error' });
+      setSnackbar({ open: true, message: 'Dienstleistung konnte nicht gespeichert werden', severity: 'error' });
     }
   };
 
@@ -99,10 +99,10 @@ const ServiceManagement: React.FC = () => {
     if (!selectedService) return;
     try {
       await dispatch(deleteService(selectedService.id)).unwrap();
-      setSnackbar({ open: true, message: 'Услуга успешно удалена', severity: 'success' });
+      setSnackbar({ open: true, message: 'Dienstleistung erfolgreich gelöscht', severity: 'success' });
       handleCloseDeleteDialog();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Не удалось удалить услугу', severity: 'error' });
+      setSnackbar({ open: true, message: 'Dienstleistung konnte nicht gelöscht werden', severity: 'error' });
     }
   };
 
@@ -168,9 +168,9 @@ const ServiceManagement: React.FC = () => {
   if (status === 'failed') {
     return (
       <Alert severity="error">
-        Ошибка: {error}
+        Fehler: {error}
         <Button color="inherit" size="small" onClick={() => dispatch(fetchServices())}>
-          Попробовать снова
+          Erneut versuchen
         </Button>
       </Alert>
     );
@@ -178,7 +178,7 @@ const ServiceManagement: React.FC = () => {
 
   return (
     <Paper style={{ padding: '20px', maxWidth: '800px', margin: '20px auto' }}>
-      <Typography variant="h4" gutterBottom>Управление услугами</Typography>
+      <Typography variant="h4" gutterBottom>Dienstleistungsverwaltung</Typography>
       <Button
         variant="contained"
         color="primary"
@@ -186,14 +186,14 @@ const ServiceManagement: React.FC = () => {
         onClick={() => handleOpenDialog()}
         style={{ marginBottom: '20px' }}
       >
-        Добавить новую услугу
+        Neue Dienstleistung hinzufügen
       </Button>
       <List>
         {services.map((service) => (
           <ListItem key={service.id}>
             <ListItemText 
               primary={service.title} 
-              secondary={`Длительность: ${service.duration} мин, Цена: ${service.price}, Специализация: ${service.specialization.title}`} 
+              secondary={`Dauer: ${service.duration} Min, Preis: ${service.price}, Spezialisierung: ${service.specialization.title}`} 
             />
             <ListItemSecondaryAction>
               <IconButton edge="end" aria-label="view" onClick={() => handleOpenViewDialog(service)}>
@@ -211,14 +211,14 @@ const ServiceManagement: React.FC = () => {
       </List>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>{selectedService ? 'Редактировать услугу' : 'Создать новую услугу'}</DialogTitle>
+        <DialogTitle>{selectedService ? 'Dienstleistung bearbeiten' : 'Neue Dienstleistung erstellen'}</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Название услуги"
+                  label="Dienstleistungsname"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
@@ -230,7 +230,7 @@ const ServiceManagement: React.FC = () => {
                   fullWidth
                   multiline
                   rows={4}
-                  label="Описание услуги"
+                  label="Beschreibung der Dienstleistung"
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
@@ -241,7 +241,7 @@ const ServiceManagement: React.FC = () => {
                 <TextField
                   fullWidth
                   type="number"
-                  label="Длительность (мин)"
+                  label="Dauer (Min)"
                   name="duration"
                   value={formData.duration}
                   onChange={handleInputChange}
@@ -251,7 +251,7 @@ const ServiceManagement: React.FC = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Цена"
+                  label="Preis"
                   name="price"
                   value={formData.price}
                   onChange={handleInputChange}
@@ -260,12 +260,12 @@ const ServiceManagement: React.FC = () => {
               </Grid>
               <Grid item xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id="specialization-select-label">Специализация</InputLabel>
+                  <InputLabel id="specialization-select-label">Spezialisierung</InputLabel>
                   <Select
                     labelId="specialization-select-label"
                     id="specialization-select"
                     value={formData.specializationId}
-                    label="Специализация"
+                    label="Spezialisierung"
                     onChange={handleSpecializationChange}
                   >
                     {specializations.map((spec) => (
@@ -277,16 +277,16 @@ const ServiceManagement: React.FC = () => {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog}>Отмена</Button>
+            <Button onClick={handleCloseDialog}>Abbrechen</Button>
             <Button type="submit" color="primary">
-              {selectedService ? 'Обновить' : 'Создать'}
+              {selectedService ? 'Aktualisieren' : 'Erstellen'}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
       <Dialog open={isViewDialogOpen} onClose={handleCloseViewDialog}>
-        <DialogTitle>Детали услуги</DialogTitle>
+        <DialogTitle>Dienstleistungsdetails</DialogTitle>
         <DialogContent>
           {selectedService && (
             <Grid container spacing={2}>
@@ -297,19 +297,19 @@ const ServiceManagement: React.FC = () => {
                 <Typography variant="body1">{selectedService.description}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="body2">Длительность: {selectedService.duration} мин</Typography>
+                <Typography variant="body2">Dauer: {selectedService.duration} Min</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="body2">Цена: {selectedService.price}</Typography>
+                <Typography variant="body2">Preis: {selectedService.price}</Typography>
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="body2">Специализация: {selectedService.specialization.title}</Typography>
+                <Typography variant="body2">Spezialisierung: {selectedService.specialization.title}</Typography>
               </Grid>
             </Grid>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseViewDialog} color="primary">Закрыть</Button>
+          <Button onClick={handleCloseViewDialog} color="primary">Schließen</Button>
         </DialogActions>
       </Dialog>
 
@@ -319,18 +319,18 @@ const ServiceManagement: React.FC = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Подтверждение удаления"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Löschbestätigung"}</DialogTitle>
         <DialogContent>
           <Typography id="alert-dialog-description">
-            Вы уверены, что хотите удалить эту услугу? Это действие нельзя отменить.
+            Sind Sie sicher, dass Sie diese Dienstleistung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog} color="primary">
-            Отмена
+            Abbrechen
           </Button>
           <Button onClick={handleDelete} color="primary" autoFocus>
-            Удалить
+            Löschen
           </Button>
         </DialogActions>
       </Dialog>
@@ -349,125 +349,3 @@ const ServiceManagement: React.FC = () => {
 };
 
 export default ServiceManagement;
-
-
-/*
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store/store';
-import { fetchServices, createService, updateService, deleteService } from '../../store/slices/servicesSlice';
-import { ServiceResponseDto, ServiceRequestDto, ServiceUpdateDto } from '../../types/services';
-import styles from './ServiceManagement.module.css';
-
-const ServiceManagement: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const services = useSelector((state: RootState) => state.services.services);
-  const [selectedService, setSelectedService] = useState<ServiceResponseDto | null>(null);
-  const [formData, setFormData] = useState<ServiceRequestDto>({
-    title: '',
-    description: '',
-    duration: 0,
-    price: '',
-    specializationId: 0,
-  });
-
-  useEffect(() => {
-    dispatch(fetchServices());
-  }, [dispatch]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedService) {
-      dispatch(updateService({ id: selectedService.id, data: formData as ServiceUpdateDto }));
-    } else {
-      dispatch(createService(formData));
-    }
-    resetForm();
-  };
-
-  const handleDelete = (id: number) => {
-    if (window.confirm('Вы уверены, что хотите удалить эту услугу?')) {
-      dispatch(deleteService(id));
-    }
-  };
-
-  const resetForm = () => {
-    setSelectedService(null);
-    setFormData({
-      title: '',
-      description: '',
-      duration: 0,
-      price: '',
-      specializationId: 0,
-    });
-  };
-
-  return (
-    <div className={styles.serviceManagement}>
-      <h2>Управление услугами</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          placeholder="Название услуги"
-          required
-        />
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          placeholder="Описание услуги"
-          required
-        />
-        <input
-          type="number"
-          name="duration"
-          value={formData.duration}
-          onChange={handleInputChange}
-          placeholder="Длительность (в минутах)"
-          required
-        />
-        <input
-          type="text"
-          name="price"
-          value={formData.price}
-          onChange={handleInputChange}
-          placeholder="Цена"
-          required
-        />
-        <input
-          type="number"
-          name="specializationId"
-          value={formData.specializationId}
-          onChange={handleInputChange}
-          placeholder="ID специализации"
-          required
-        />
-        <button type="submit">{selectedService ? 'Обновить' : 'Создать'}</button>
-        {selectedService && <button type="button" onClick={resetForm}>Отмена</button>}
-      </form>
-      <ul className={styles.serviceList}>
-        {services.map((service) => (
-          <li key={service.id} className={styles.serviceItem}>
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
-            <span>Длительность: {service.duration} мин</span>
-            <span>Цена: {service.price}</span>
-            <div>
-              <button onClick={() => setSelectedService(service)}>Редактировать</button>
-              <button onClick={() => handleDelete(service.id)}>Удалить</button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default ServiceManagement;  */

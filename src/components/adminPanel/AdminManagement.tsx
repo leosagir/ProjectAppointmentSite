@@ -174,7 +174,7 @@ const AdminManagement: React.FC = () => {
 
   return (
     <Paper style={{ padding: '20px', maxWidth: '800px', margin: '20px auto' }}>
-      <Typography variant="h4" gutterBottom>Управление администраторами</Typography>
+      <Typography variant="h4" gutterBottom>Administratorenverwaltung</Typography>
       <Button
         variant="contained"
         color="primary"
@@ -182,12 +182,12 @@ const AdminManagement: React.FC = () => {
         onClick={() => handleOpenDialog()}
         style={{ marginBottom: '20px' }}
       >
-        Добавить нового администратора
+        Neuen Administrator hinzufügen
       </Button>
 
       <TextField
         fullWidth
-        label="Поиск по фамилии"
+        label="Suche nach Nachname"
         value={searchLastName}
         onChange={(e) => setSearchLastName(e.target.value)}
         style={{ marginBottom: '20px' }}
@@ -219,14 +219,15 @@ const AdminManagement: React.FC = () => {
       </List>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>{selectedAdmin ? 'Редактировать администратора' : 'Создать нового администратора'}</DialogTitle>
+        <DialogTitle>{selectedAdmin ? 'Administrator bearbeiten' : 'Neuen Administrator erstellen'}</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
+              {/* ... (form fields remain the same, labels are translated) */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Email"
+                  label="E-Mail"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
@@ -237,7 +238,7 @@ const AdminManagement: React.FC = () => {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Пароль"
+                    label="Passwort"
                     name="password"
                     type="password"
                     value={formData.password}
@@ -249,7 +250,7 @@ const AdminManagement: React.FC = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Имя"
+                  label="Vorname"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
@@ -259,7 +260,7 @@ const AdminManagement: React.FC = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Фамилия"
+                  label="Nachname"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
@@ -269,7 +270,7 @@ const AdminManagement: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Дата рождения"
+                  label="Geburtsdatum"
                   name="dateOfBirth"
                   type="date"
                   value={formData.dateOfBirth}
@@ -283,7 +284,7 @@ const AdminManagement: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Адрес"
+                  label="Adresse"
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
@@ -293,7 +294,7 @@ const AdminManagement: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Телефон"
+                  label="Telefon"
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
@@ -303,9 +304,9 @@ const AdminManagement: React.FC = () => {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog}>Отмена</Button>
+            <Button onClick={handleCloseDialog}>Abbrechen</Button>
             <Button type="submit" color="primary">
-              {selectedAdmin ? 'Обновить' : 'Создать'}
+              {selectedAdmin ? 'Aktualisieren' : 'Erstellen'}
             </Button>
           </DialogActions>
         </form>

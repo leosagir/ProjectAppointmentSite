@@ -34,13 +34,13 @@ import SpecializationManagement from '../components/adminPanel/SpecialisationMan
 const drawerWidth = 240;
 
 const menuItems = [
-  { text: 'Управление специалистами', icon: <PeopleIcon />, path: '/admin/specialists' },
-  { text: 'Управление записями', icon: <EventIcon />, path: '/admin/appointments' },
-  { text: 'Управление клиентами', icon: <PersonIcon />, path: '/admin/clients' },
-  { text: 'Управление администраторами', icon: <AdminPanelSettingsIcon />, path: '/admin/admins' },
-  { text: 'Управление отзывами', icon: <RateReviewIcon />, path: '/admin/reviews' },
-  { text: 'Управление услугами', icon: <MedicalServicesIcon />, path: '/admin/services' },
-  { text: 'Управление специализациями', icon: <CategoryIcon />, path: '/admin/specializations' },
+  { text: 'Verwaltung der Spezialisten', icon: <PeopleIcon />, path: '/admin/specialists' },
+  { text: 'Terminverwaltung', icon: <EventIcon />, path: '/admin/appointments' },
+  { text: 'Kundenverwaltung', icon: <PersonIcon />, path: '/admin/clients' },
+  { text: 'Administratorenverwaltung', icon: <AdminPanelSettingsIcon />, path: '/admin/admins' },
+  { text: 'Bewertungsverwaltung', icon: <RateReviewIcon />, path: '/admin/reviews' },
+  { text: 'Dienstverwaltung', icon: <MedicalServicesIcon />, path: '/admin/services' },
+  { text: 'Spezialisierungsverwaltung', icon: <CategoryIcon />, path: '/admin/specializations' },
 ];
 
 const AdminPanel: React.FC = () => {
@@ -57,7 +57,7 @@ const AdminPanel: React.FC = () => {
     <Box sx={{ overflow: 'auto' }}>
       <Box sx={{ p: 2 }}>
         <Typography variant="h6" noWrap component="div">
-          Панель администратора
+          Administratorbereich
         </Typography>
       </Box>
       <List>
@@ -79,6 +79,7 @@ const AdminPanel: React.FC = () => {
   
   return (
     <Box sx={{ 
+      paddingTop: '84px',
       display: 'flex', 
       flexDirection: 'column',
       height: '100%',
@@ -125,7 +126,7 @@ const AdminPanel: React.FC = () => {
           {isMobile && (
             <IconButton
               color="inherit"
-              aria-label="open drawer"
+              aria-label="Menü öffnen"
               edge="start"
               onClick={handleDrawerToggle}
               sx={{ mb: 2 }}
@@ -150,7 +151,7 @@ const AdminPanel: React.FC = () => {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, // Bessere Öffnungsleistung auf Mobilgeräten.
           }}
           sx={{
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

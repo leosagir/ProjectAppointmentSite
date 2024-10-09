@@ -79,29 +79,29 @@ const ReviewManagement: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        Управление отзывами
+        Bewertungsverwaltung
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <TextField
             fullWidth
             variant="outlined"
-            label="Поиск по имени клиента или специалиста"
+            label="Suche nach Kunden- oder Spezialistennamen"
             value={searchTerm}
             onChange={handleSearchChange}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth variant="outlined">
-            <InputLabel>Сортировать по</InputLabel>
+            <InputLabel>Sortieren nach</InputLabel>
             <Select<SortOption>
               value={sortBy}
               onChange={handleSortChange}
-              label="Сортировать по"
+              label="Sortieren nach"
             >
-              <MenuItem value="rating">Рейтингу</MenuItem>
-              <MenuItem value="specialist">Специалисту</MenuItem>
-              <MenuItem value="date">Дате</MenuItem>
+              <MenuItem value="rating">Bewertung</MenuItem>
+              <MenuItem value="specialist">Spezialist</MenuItem>
+              <MenuItem value="date">Datum</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -114,7 +114,7 @@ const ReviewManagement: React.FC = () => {
                 primary={
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Typography variant="subtitle1">
-                      {review.clientName} о {review.specialistName}
+                      {review.clientName} über {review.specialistName}
                     </Typography>
                     <Rating value={review.rating} readOnly size="small" />
                   </Box>
@@ -122,7 +122,7 @@ const ReviewManagement: React.FC = () => {
                 secondary={
                   <>
                     <Typography variant="body2" color="textSecondary">
-                      Дата: {new Date(review.createdAt).toLocaleDateString()}
+                      Datum: {new Date(review.createdAt).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body2">{review.comment}</Typography>
                   </>
@@ -134,14 +134,14 @@ const ReviewManagement: React.FC = () => {
       </List>
       {selectedReview && (
         <Box mt={2}>
-          <Typography variant="h6">Выбранный отзыв:</Typography>
+          <Typography variant="h6">Ausgewählte Bewertung:</Typography>
           <Paper elevation={3} style={{ padding: '15px', marginTop: '10px' }}>
             <Typography variant="subtitle1">
-              {selectedReview.clientName} о {selectedReview.specialistName}
+              {selectedReview.clientName} über {selectedReview.specialistName}
             </Typography>
             <Rating value={selectedReview.rating} readOnly />
             <Typography variant="body2" color="textSecondary">
-              Дата: {new Date(selectedReview.createdAt).toLocaleDateString()}
+              Datum: {new Date(selectedReview.createdAt).toLocaleDateString()}
             </Typography>
             <Typography variant="body1" style={{ marginTop: '10px' }}>
               {selectedReview.comment}

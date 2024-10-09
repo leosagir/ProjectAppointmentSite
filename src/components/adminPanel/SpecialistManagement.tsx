@@ -110,14 +110,14 @@ const SpecialistManagement: React.FC = () => {
     try {
       if (selectedSpecialist) {
         await dispatch(updateSpecialist({ id: selectedSpecialist.id, data: formData as SpecialistUpdateDto })).unwrap();
-        setSnackbar({ open: true, message: 'Специалист успешно обновлен', severity: 'success' });
+        setSnackbar({ open: true, message: 'Spezialist erfolgreich aktualisiert', severity: 'success' });
       } else {
         await dispatch(createSpecialist(formData)).unwrap();
-        setSnackbar({ open: true, message: 'Специалист успешно создан', severity: 'success' });
+        setSnackbar({ open: true, message: 'Spezialist erfolgreich erstellt', severity: 'success' });
       }
       handleCloseDialog();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Не удалось сохранить специалиста', severity: 'error' });
+      setSnackbar({ open: true, message: 'Spezialist konnte nicht gespeichert werden', severity: 'error' });
     }
   };
 
@@ -125,28 +125,28 @@ const SpecialistManagement: React.FC = () => {
     if (!selectedSpecialist) return;
     try {
       await dispatch(deleteSpecialist(selectedSpecialist.id)).unwrap();
-      setSnackbar({ open: true, message: 'Специалист успешно удален', severity: 'success' });
+      setSnackbar({ open: true, message: 'Spezialist erfolgreich gelöscht', severity: 'success' });
       handleCloseDeleteDialog();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Не удалось удалить специалиста', severity: 'error' });
+      setSnackbar({ open: true, message: 'Spezialist konnte nicht gelöscht werden', severity: 'error' });
     }
   };
 
   const handleDeactivate = async (id: number) => {
     try {
       await dispatch(deactivateSpecialist(id)).unwrap();
-      setSnackbar({ open: true, message: 'Специалист успешно деактивирован', severity: 'success' });
+      setSnackbar({ open: true, message: 'Spezialist erfolgreich deaktiviert', severity: 'success' });
     } catch (err) {
-      setSnackbar({ open: true, message: 'Не удалось деактивировать специалиста', severity: 'error' });
+      setSnackbar({ open: true, message: 'Spezialist konnte nicht deaktiviert werden', severity: 'error' });
     }
   };
 
   const handleReactivate = async (id: number) => {
     try {
       await dispatch(reactivateSpecialist(id)).unwrap();
-      setSnackbar({ open: true, message: 'Специалист успешно реактивирован', severity: 'success' });
+      setSnackbar({ open: true, message: 'Spezialist erfolgreich reaktiviert', severity: 'success' });
     } catch (err) {
-      setSnackbar({ open: true, message: 'Не удалось реактивировать специалиста', severity: 'error' });
+      setSnackbar({ open: true, message: 'Spezialist konnte nicht reaktiviert werden', severity: 'error' });
     }
   };
 
@@ -221,9 +221,9 @@ const SpecialistManagement: React.FC = () => {
   if (status === 'failed') {
     return (
       <Alert severity="error">
-        Ошибка: {error}
+        Fehler: {error}
         <Button color="inherit" size="small" onClick={() => dispatch(fetchSpecialists())}>
-          Попробовать снова
+          Erneut versuchen
         </Button>
       </Alert>
     );
@@ -231,7 +231,7 @@ const SpecialistManagement: React.FC = () => {
 
   return (
     <Paper style={{ padding: '20px', maxWidth: '800px', margin: '20px auto' }}>
-      <Typography variant="h4" gutterBottom>Управление специалистами</Typography>
+      <Typography variant="h4" gutterBottom>Spezialistenverwaltung</Typography>
       <Button
         variant="contained"
         color="primary"
@@ -239,26 +239,26 @@ const SpecialistManagement: React.FC = () => {
         onClick={() => handleOpenDialog()}
         style={{ marginBottom: '20px' }}
       >
-        Добавить нового специалиста
+        Neuen Spezialisten hinzufügen
       </Button>
 
       <Grid container spacing={2} style={{ marginBottom: '20px' }}>
         <Grid item xs={12} sm={4}>
           <TextField
             fullWidth
-            label="Поиск по фамилии"
+            label="Suche nach Nachname"
             value={searchLastName}
             onChange={(e) => setSearchLastName(e.target.value)}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth>
-            <InputLabel>Поиск по специализации</InputLabel>
+            <InputLabel>Suche nach Spezialisierung</InputLabel>
             <Select
               value={searchSpecialization}
               onChange={(e) => setSearchSpecialization(e.target.value as number)}
             >
-              <MenuItem value="">Все</MenuItem>
+              <MenuItem value="">Alle</MenuItem>
               {specializations.map((spec) => (
                 <MenuItem key={spec.id} value={spec.id}>{spec.title}</MenuItem>
               ))}
@@ -267,12 +267,12 @@ const SpecialistManagement: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth>
-            <InputLabel>Поиск по услуге</InputLabel>
+            <InputLabel>Suche nach Dienstleistung</InputLabel>
             <Select
               value={searchService}
               onChange={(e) => setSearchService(e.target.value as number)}
             >
-              <MenuItem value="">Все</MenuItem>
+              <MenuItem value="">Alle</MenuItem>
               {services.map((service) => (
                 <MenuItem key={service.id} value={service.id}>{service.title}</MenuItem>
               ))}
@@ -286,22 +286,22 @@ const SpecialistManagement: React.FC = () => {
           <ListItem key={specialist.id}>
             <ListItemText 
               primary={`${specialist.lastName} ${specialist.firstName}`}
-              secondary={`Email: ${specialist.email}, Телефон: ${specialist.phone}`}
+              secondary={`E-Mail: ${specialist.email}, Telefon: ${specialist.phone}`}
             />
             <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="view" onClick={() => handleOpenViewDialog(specialist)}>
+              <IconButton edge="end" aria-label="ansehen" onClick={() => handleOpenViewDialog(specialist)}>
                 <VisibilityIcon />
               </IconButton>
-              <IconButton edge="end" aria-label="edit" onClick={() => handleOpenDialog(specialist)}>
+              <IconButton edge="end" aria-label="bearbeiten" onClick={() => handleOpenDialog(specialist)}>
                 <EditIcon />
               </IconButton>
-              <IconButton edge="end" aria-label="delete" onClick={() => handleOpenDeleteDialog(specialist)}>
+              <IconButton edge="end" aria-label="löschen" onClick={() => handleOpenDeleteDialog(specialist)}>
                 <DeleteIcon />
               </IconButton>
               {specialist.status === 'ACTIVE' ? (
-                <Button onClick={() => handleDeactivate(specialist.id)}>Деактивировать</Button>
+                <Button onClick={() => handleDeactivate(specialist.id)}>Deaktivieren</Button>
               ) : (
-                <Button onClick={() => handleReactivate(specialist.id)}>Реактивировать</Button>
+                <Button onClick={() => handleReactivate(specialist.id)}>Reaktivieren</Button>
               )}
             </ListItemSecondaryAction>
           </ListItem>
@@ -309,14 +309,14 @@ const SpecialistManagement: React.FC = () => {
       </List>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>{selectedSpecialist ? 'Редактировать специалиста' : 'Создать нового специалиста'}</DialogTitle>
+        <DialogTitle>{selectedSpecialist ? 'Spezialist bearbeiten' : 'Neuen Spezialisten erstellen'}</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Email"
+                  label="E-Mail"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
@@ -327,7 +327,7 @@ const SpecialistManagement: React.FC = () => {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Пароль"
+                    label="Passwort"
                     name="password"
                     type="password"
                     value={formData.password}
@@ -339,7 +339,7 @@ const SpecialistManagement: React.FC = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Имя"
+                  label="Vorname"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
@@ -349,7 +349,7 @@ const SpecialistManagement: React.FC = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Фамилия"
+                  label="Nachname"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
@@ -359,7 +359,7 @@ const SpecialistManagement: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Дата рождения"
+                  label="Geburtsdatum"
                   name="dateOfBirth"
                   type="date"
                   value={formData.dateOfBirth}
@@ -372,7 +372,7 @@ const SpecialistManagement: React.FC = () => {
               </Grid>
               <Grid item xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel>Специализации</InputLabel>
+                  <InputLabel>Spezialisierungen</InputLabel>
                   <Select
                     multiple
                     value={formData.specializationIds}
@@ -385,163 +385,163 @@ const SpecialistManagement: React.FC = () => {
                       </Box>
                     )}
                   >                  
-                      {specializations.map((spec) => (
-                        <MenuItem key={spec.id} value={spec.id}>
-                          {spec.title}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel>Услуги</InputLabel>
-                    <Select
-  multiple
-  value={formData.serviceIds}
-  onChange={(e: SelectChangeEvent<number[]>) => handleMultiSelectChange(e, 'serviceIds')}
-  renderValue={(selected) => (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-      {(selected as number[]).map((value) => (
-        <Chip key={value} label={availableServices.find(s => s.id === value)?.title} />
-      ))}
-    </Box>
-  )}
-  disabled={formData.specializationIds.length === 0}
->
-  {availableServices.map((service) => (
-    <MenuItem key={service.id} value={service.id}>
-      {service.title}
-    </MenuItem>
-  ))}
-</Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    label="Описание"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Адрес"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Телефон"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseDialog}>Отмена</Button>
-              <Button type="submit" color="primary">
-                {selectedSpecialist ? 'Обновить' : 'Создать'}
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
-  
-        <Dialog open={isViewDialogOpen} onClose={handleCloseViewDialog}>
-          <DialogTitle>Детали специалиста</DialogTitle>
-          <DialogContent>
-            {selectedSpecialist && (
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="h6">{`${selectedSpecialist.lastName} ${selectedSpecialist.firstName}`}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Email: {selectedSpecialist.email}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Телефон: {selectedSpecialist.phone}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Дата рождения: {selectedSpecialist.dateOfBirth}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Адрес: {selectedSpecialist.address}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Описание: {selectedSpecialist.description}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Специализации:</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selectedSpecialist.specializations.map((spec) => (
-                      <Chip key={spec.id} label={spec.title} />
+                    {specializations.map((spec) => (
+                      <MenuItem key={spec.id} value={spec.id}>
+                        {spec.title}
+                      </MenuItem>
                     ))}
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-              <Typography variant="body1">Услуги:</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selectedSpecialist.services.map((service) => (
-                  <Chip key={service.id} label={service.title} />
-                ))}
-              </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Статус: {selectedSpecialist.status}</Typography>
-                </Grid>
+                  </Select>
+                </FormControl>
               </Grid>
-            )}
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Dienstleistungen</InputLabel>
+                  <Select
+                    multiple
+                    value={formData.serviceIds}
+                    onChange={(e: SelectChangeEvent<number[]>) => handleMultiSelectChange(e, 'serviceIds')}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {(selected as number[]).map((value) => (
+                          <Chip key={value} label={availableServices.find(s => s.id === value)?.title} />
+                        ))}
+                      </Box>
+                    )}
+                    disabled={formData.specializationIds.length === 0}
+                  >
+                    {availableServices.map((service) => (
+                      <MenuItem key={service.id} value={service.id}>
+                        {service.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label="Beschreibung"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Adresse"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Telefon"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseViewDialog} color="primary">Закрыть</Button>
-          </DialogActions>
-        </Dialog>
-  
-        <Dialog
-          open={isDeleteDialogOpen}
-          onClose={handleCloseDeleteDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{"Подтверждение удаления"}</DialogTitle>
-          <DialogContent>
-            <Typography id="alert-dialog-description">
-              Вы уверены, что хотите удалить этого специалиста? Это действие нельзя отменить.
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDeleteDialog} color="primary">
-              Отмена
-            </Button>
-            <Button onClick={handleDelete} color="primary" autoFocus>
-              Удалить
+            <Button onClick={handleCloseDialog}>Abbrechen</Button>
+            <Button type="submit" color="primary">
+              {selectedSpecialist ? 'Aktualisieren' : 'Erstellen'}
             </Button>
           </DialogActions>
-        </Dialog>
-  
-        <Snackbar 
-          open={snackbar.open} 
-          autoHideDuration={6000} 
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-        >
-          <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Paper>
-    );
-  };
-  
-  export default SpecialistManagement;
+        </form>
+      </Dialog>
+
+      <Dialog open={isViewDialogOpen} onClose={handleCloseViewDialog}>
+        <DialogTitle>Spezialistendetails</DialogTitle>
+        <DialogContent>
+          {selectedSpecialist && (
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Typography variant="h6">{`${selectedSpecialist.lastName} ${selectedSpecialist.firstName}`}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">E-Mail: {selectedSpecialist.email}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Telefon: {selectedSpecialist.phone}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Geburtsdatum: {selectedSpecialist.dateOfBirth}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Adresse: {selectedSpecialist.address}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Beschreibung: {selectedSpecialist.description}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Spezialisierungen:</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selectedSpecialist.specializations.map((spec) => (
+                    <Chip key={spec.id} label={spec.title} />
+                  ))}
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Dienstleistungen:</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selectedSpecialist.services.map((service) => (
+                    <Chip key={service.id} label={service.title} />
+                  ))}
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">Status: {selectedSpecialist.status}</Typography>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseViewDialog} color="primary">Schließen</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Löschbestätigung"}</DialogTitle>
+        <DialogContent>
+          <Typography id="alert-dialog-description">
+            Sind Sie sicher, dass Sie diesen Spezialisten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Abbrechen
+          </Button>
+          <Button onClick={handleDelete} color="primary" autoFocus>
+            Löschen
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Paper>
+  );
+};
+
+export default SpecialistManagement;

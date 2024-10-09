@@ -28,7 +28,7 @@ const NotificationManagement: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm('Вы уверены, что хотите удалить это уведомление?')) {
+    if (window.confirm('Sind Sie sicher, dass Sie diese Benachrichtigung löschen möchten?')) {
       dispatch(deleteNotification(id));
     }
   };
@@ -42,14 +42,14 @@ const NotificationManagement: React.FC = () => {
 
   return (
     <div className={styles.notificationManagement}>
-      <h2>Управление уведомлениями</h2>
+      <h2>Benachrichtigungsverwaltung</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="number"
           name="clientId"
           value={formData.clientId}
           onChange={handleInputChange}
-          placeholder="ID клиента"
+          placeholder="Kunden-ID"
           required
         />
         <input
@@ -57,18 +57,18 @@ const NotificationManagement: React.FC = () => {
           name="appointmentId"
           value={formData.appointmentId}
           onChange={handleInputChange}
-          placeholder="ID записи"
+          placeholder="Termin-ID"
           required
         />
-        <button type="submit">Создать уведомление</button>
+        <button type="submit">Benachrichtigung erstellen</button>
       </form>
       <ul className={styles.notificationList}>
         {notifications.map((notification) => (
           <li key={notification.id} className={styles.notificationItem}>
-            <span>Клиент: {notification.clientFullName}</span>
-            <span>Дата записи: {notification.appointmentDate}</span>
-            <span>Статус: {notification.status}</span>
-            <button onClick={() => handleDelete(notification.id)}>Удалить</button>
+            <span>Kunde: {notification.clientFullName}</span>
+            <span>Termindatum: {notification.appointmentDate}</span>
+            <span>Status: {notification.status}</span>
+            <button onClick={() => handleDelete(notification.id)}>Löschen</button>
           </li>
         ))}
       </ul>

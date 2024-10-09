@@ -176,7 +176,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ paddingTop: '64px' }}>
       {/* Hero Section */}
       <HeroSection>
         <Container>

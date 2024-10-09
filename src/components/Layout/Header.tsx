@@ -29,7 +29,7 @@ const pages = [
   { title: 'Startseite', path: '/' },  
   { title: 'Über uns', path: '/about' },
   { title: 'Blog', path: '/blog' },
-  { title: 'Kontakt', path: '/contacts' }
+  { title: 'Kontakt', path: '/contact' }
 ];
 
 const Header: React.FC = () => {
@@ -117,7 +117,7 @@ const Header: React.FC = () => {
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography

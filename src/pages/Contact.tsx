@@ -18,7 +18,7 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет логика отправки формы
+
     console.log({ name, email, message });
     setOpenSnackbar(true);
     setName('');
@@ -27,46 +27,46 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ paddingTop: '64px' }}>
       <Container sx={{ py: 8 }}>
         <Typography variant="h2" component="h1" align="center" gutterBottom>
-          Свяжитесь с нами
+          Kontaktieren Sie uns
         </Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Typography variant="h5" gutterBottom>
-              Наши контакты
+              Unsere Kontaktdaten
             </Typography>
             <Typography variant="body1" paragraph>
-              Адрес: ул. Примерная, д. 123, г. Москва
+              Adresse: Musterstraße 123, 12345 Berlin
             </Typography>
             <Typography variant="body1" paragraph>
-              Телефон: +7 (123) 456-78-90
+              Telefon: +49 (123) 456-78-90
             </Typography>
             <Typography variant="body1" paragraph>
-              Email: info@dentclinic.ru
+              E-Mail: info@zahnklinik.de
             </Typography>
             <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-              Часы работы
+              Öffnungszeiten
             </Typography>
             <Typography variant="body1">
-              Пн-Пт: 9:00 - 20:00
+              Mo-Fr: 8:00 - 20:00 Uhr
             </Typography>
             <Typography variant="body1">
-              Сб: 10:00 - 18:00
+              Sa: 9:00 - 14:00 Uhr
             </Typography>
             <Typography variant="body1">
-              Вс: Выходной
+              So: Geschlossen
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="h5" gutterBottom>
-              Напишите нам
+              Schreiben Sie uns
             </Typography>
             <form onSubmit={handleSubmit}>
               <TextField
                 fullWidth
-                label="Имя"
+                label="Name"
                 variant="outlined"
                 margin="normal"
                 required
@@ -75,7 +75,7 @@ const Contact: React.FC = () => {
               />
               <TextField
                 fullWidth
-                label="Email"
+                label="E-Mail"
                 variant="outlined"
                 margin="normal"
                 required
@@ -85,7 +85,7 @@ const Contact: React.FC = () => {
               />
               <TextField
                 fullWidth
-                label="Сообщение"
+                label="Nachricht"
                 variant="outlined"
                 margin="normal"
                 required
@@ -101,7 +101,7 @@ const Contact: React.FC = () => {
                 size="large"
                 sx={{ mt: 2 }}
               >
-                Отправить
+                Absenden
               </Button>
             </form>
           </Grid>
@@ -113,7 +113,7 @@ const Contact: React.FC = () => {
         onClose={() => setOpenSnackbar(false)}
       >
         <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
-          Ваше сообщение успешно отправлено!
+          Ihre Nachricht wurde erfolgreich gesendet!
         </Alert>
       </Snackbar>
     </Box>

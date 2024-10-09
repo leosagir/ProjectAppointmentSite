@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { fetchServices } from '../../store/slices/servicesSlice';
 import { ServiceResponseDto } from '../../types/services';
+import { Typography, List, ListItem, ListItemText, Box } from '@mui/material';
 
 const SpecialistServices: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -13,21 +14,23 @@ const SpecialistServices: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div>
-      <h2>Мои услуги</h2>
+    <Box>
+      <Typography variant="h5" gutterBottom>Meine Dienstleistungen</Typography>
       {services.length === 0 ? (
-        <p>У вас нет доступных услуг.</p>
+        <Typography>Sie haben keine verfügbaren Dienstleistungen.</Typography>
       ) : (
-        <ul>
+        <List>
           {services.map((service: ServiceResponseDto) => (
-            <li key={service.id}>
-              {service.title} - {service.price}
-              <p>{service.description}</p>
-            </li>
+            <ListItem key={service.id}>
+              <ListItemText
+                primary={`${service.title} - ${service.price} €`}
+                secondary={service.description}
+              />
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Box>
   );
 };
 
