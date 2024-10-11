@@ -15,10 +15,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role, element }) => {
   console.log('ProtectedRoute:', { isAuthenticated, user, requiredRole: role });
 
   if (!isAuthenticated || !user) {
+    console.log('User not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
-  if (user && user.role !== role) {
+  if (user.role !== role) {
     console.log('User role does not match required role:', { userRole: user.role, requiredRole: role });
     return <Navigate to="/unauthorized" replace />;
   }

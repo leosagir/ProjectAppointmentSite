@@ -6,6 +6,20 @@ import api from '../../api/axios';
 import axios from 'axios';
 import { RootState } from '../store';
 
+const mapRole = (role: string): UserRole => {
+  switch (role) {
+    case 'ROLE_ADMINISTRATOR':
+      return UserRole.ADMINISTRATOR;
+    case 'ROLE_SPECIALIST':
+      return UserRole.SPECIALIST;
+    case 'ROLE_CLIENT':
+      return UserRole.CLIENT;
+    default:
+      console.warn(`Unknown role: ${role}`);
+      return UserRole.CLIENT;
+  }
+};
+
 const initialState: AuthState = {
   user: null,
   accessToken: tokenManager.getAccessToken(),
@@ -26,7 +40,10 @@ export const login = createAsyncThunk<
     const response = await api.post('/api/auth/login', { email, password });
     tokenManager.saveTokens(response.data.accessToken, response.data.refreshToken);
     return {
-      user: { email: response.data.email, role: response.data.roles[0] as UserRole },
+      user: { 
+        email: response.data.email,
+        role: mapRole(response.data.roles[0])
+      },
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken
     };
@@ -100,7 +117,11 @@ export const loadUser = createAsyncThunk<User, void, { rejectValue: string; stat
       console.log('Sending request to /api/auth/user');
       const response = await api.get('/api/auth/user');
       console.log('User data received:', response.data);
-      return response.data;
+      return {
+        id: response.data.id,
+        email: response.data.email,
+        role: mapRole(response.data.role)
+      };
     } catch (err) {
       if (axios.isAxiosError(err)) {
         console.error('Axios error:', err.response?.data);
