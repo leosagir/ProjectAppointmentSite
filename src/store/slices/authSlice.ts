@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AuthState, User } from '../../types/auth';
+import { AuthState, User, UserRole } from '../../types/auth';
 import { ClientRequestDto } from '../../types/client';
 import { tokenManager } from '../../utils/tokenManager';
 import api from '../../api/axios';
 import axios from 'axios';
+import { RootState } from '../store';
 
 const initialState: AuthState = {
   user: null,
@@ -25,7 +26,7 @@ export const login = createAsyncThunk<
     const response = await api.post('/api/auth/login', { email, password });
     tokenManager.saveTokens(response.data.accessToken, response.data.refreshToken);
     return {
-      user: { email: response.data.email, role: response.data.roles[0] },
+      user: { email: response.data.email, role: response.data.roles[0] as UserRole },
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken
     };
@@ -40,7 +41,7 @@ export const login = createAsyncThunk<
 export const refreshTokenThunk = createAsyncThunk<
   { accessToken: string; refreshToken: string },
   void,
-  { rejectValue: string; state: { auth: AuthState } }
+  { rejectValue: string; state: RootState }
 >('auth/refreshToken', async (_, { getState, rejectWithValue }) => {
   const { auth } = getState();
   try {
@@ -79,9 +80,9 @@ export const register = createAsyncThunk<
   }
 });
 
-export const loadUser = createAsyncThunk<User, void, { rejectValue: string }>(
+export const loadUser = createAsyncThunk<User, void, { rejectValue: string; state: RootState }>(
   'auth/loadUser',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch, getState }) => {
     try {
       const token = tokenManager.getAccessToken();
       if (!token) {
@@ -89,15 +90,27 @@ export const loadUser = createAsyncThunk<User, void, { rejectValue: string }>(
       }
       
       if (tokenManager.isTokenExpired(token)) {
-        return rejectWithValue('Token expired');
+        console.log('Token expired, attempting to refresh');
+        const refreshResult = await dispatch(refreshTokenThunk()).unwrap();
+        if (!refreshResult.accessToken) {
+          return rejectWithValue('Failed to refresh token');
+        }
       }
 
+      console.log('Sending request to /api/auth/user');
       const response = await api.get('/api/auth/user');
+      console.log('User data received:', response.data);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        console.error('Axios error:', err.response?.data);
+        if (err.response?.status === 401) {
+          tokenManager.removeTokens();
+          return rejectWithValue('Unauthorized. Please log in again.');
+        }
         return rejectWithValue(err.response?.data?.message || 'Failed to load user');
       }
+      console.error('Unexpected error:', err);
       return rejectWithValue('An unexpected error occurred');
     }
   }
@@ -124,6 +137,7 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false; 
+      tokenManager.removeTokens();
     },
     openLoginModal: (state) => {
       state.isLoginModalOpen = true;
@@ -159,6 +173,7 @@ const authSlice = createSlice({
       .addCase(refreshTokenThunk.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
+        state.isAuthenticated = true;
       })
       .addCase(refreshTokenThunk.rejected, (state) => {
         state.user = null;
@@ -195,6 +210,12 @@ const authSlice = createSlice({
       .addCase(loadUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        if (action.payload === 'Unauthorized. Please log in again.') {
+          state.isAuthenticated = false;
+          state.user = null;
+          state.accessToken = null;
+          state.refreshToken = null;
+        }
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
