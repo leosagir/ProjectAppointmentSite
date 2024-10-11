@@ -23,6 +23,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role, element }) => {
     return <Navigate to="/unauthorized" replace />;
   }
 
+  console.log('Rendering element:', element);
   return element;
 };
 
