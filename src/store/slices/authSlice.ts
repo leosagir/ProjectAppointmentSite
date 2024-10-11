@@ -7,11 +7,14 @@ import axios from 'axios';
 import { RootState } from '../store';
 
 const mapRole = (role: string): UserRole => {
-  switch (role) {
+  switch (role.toUpperCase()) {
+    case 'ADMINISTRATOR':
     case 'ROLE_ADMINISTRATOR':
       return UserRole.ADMINISTRATOR;
+    case 'SPECIALIST':
     case 'ROLE_SPECIALIST':
       return UserRole.SPECIALIST;
+    case 'CLIENT':
     case 'ROLE_CLIENT':
       return UserRole.CLIENT;
     default:
@@ -117,10 +120,12 @@ export const loadUser = createAsyncThunk<User, void, { rejectValue: string; stat
       console.log('Sending request to /api/auth/user');
       const response = await api.get('/api/auth/user');
       console.log('User data received:', response.data);
+      const mappedRole = mapRole(response.data.role);
+      console.log('Mapped role:', mappedRole);
       return {
         id: response.data.id,
         email: response.data.email,
-        role: mapRole(response.data.role)
+        role: mappedRole
       };
     } catch (err) {
       if (axios.isAxiosError(err)) {

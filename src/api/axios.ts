@@ -1,7 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { tokenManager } from '../utils/tokenManager';
 
-// Создаем пользовательский интерфейс, расширяющий InternalAxiosRequestConfig
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
@@ -19,28 +18,46 @@ api.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    console.log('Request config:', config);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
+  }
 );
 
 api.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    console.log('Response:', response);
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomAxiosRequestConfig;
-    if (error.response?.status === 403) console.error('Доступ запрещен');
+    console.error('Response error:', error.response?.status, error.message);
+
+    if (error.response?.status === 403) {
+      console.error('Доступ запрещен');
+    }
+
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
+      console.log('Attempting to refresh token');
       try {
         const refreshToken = tokenManager.getRefreshToken();
-        const response = await axios.post('/api/auth/refresh', { refreshToken });
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+        const response = await axios.post(`${api.defaults.baseURL}/api/auth/refresh`, { refreshToken });
         const { accessToken, refreshToken: newRefreshToken } = response.data;
         tokenManager.saveTokens(accessToken, newRefreshToken);
         api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        console.log('Token refreshed successfully');
         return api(originalRequest);
       } catch (refreshError) {
+        console.error('Error refreshing token:', refreshError);
         tokenManager.removeTokens();
-        // Здесь можно добавить логику для перенаправления на страницу входа
+        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
