@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from './components/Layout/Header';
@@ -11,7 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AppDispatch, RootState } from './store/store';
 import { UserRole } from './types/auth';
 import Modal from './components/Modal/Modal';
-import { closeLoginModal, closeRegistrationModal } from './store/slices/authSlice';
+import { closeLoginModal, closeRegistrationModal, loadUser } from './store/slices/authSlice';
 import RegistrationForm from './components/auth/RegistrationForm';
 import LoginForm from './components/auth/LoginForm';
 import About from './pages/About';
@@ -19,10 +19,18 @@ import Contact from './pages/Contact';
 import Blog from './pages/Blog';
 
 import { Box } from '@mui/material';
+import { tokenManager } from './utils/tokenManager';
 
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user, isAuthenticated, isLoginModalOpen, isRegistrationModalOpen } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    const token = tokenManager.getAccessToken();
+    if (token && !tokenManager.isTokenExpired(token)) {
+      dispatch(loadUser());
+    }
+  }, [dispatch])
 
   return (
     <Router>

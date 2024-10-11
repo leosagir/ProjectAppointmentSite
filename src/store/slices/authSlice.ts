@@ -79,6 +79,30 @@ export const register = createAsyncThunk<
   }
 });
 
+export const loadUser = createAsyncThunk<User, void, { rejectValue: string }>(
+  'auth/loadUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = tokenManager.getAccessToken();
+      if (!token) {
+        return rejectWithValue('No token available');
+      }
+      
+      if (tokenManager.isTokenExpired(token)) {
+        return rejectWithValue('Token expired');
+      }
+
+      const response = await api.get('/api/auth/user');
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return rejectWithValue(err.response?.data?.message || 'Failed to load user');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
+  }
+);
+
 export const logout = createAsyncThunk('auth/logout', async () => {
   tokenManager.removeTokens();
 });
@@ -155,6 +179,20 @@ const authSlice = createSlice({
         state.isRegistrationModalOpen = false;
       })
       .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(loadUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(loadUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
