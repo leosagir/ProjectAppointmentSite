@@ -141,8 +141,7 @@ const ClientManagement: React.FC = () => {
     setActiveTab(0);
     try {
       const clientAppointments = appointments.filter(app => 
-        app.clientId === client.id &&
-        app.appointmentStatus === AppointmentStatus.BOOKED
+        app.clientId === client.id
       );
       setClientAppointments(clientAppointments);
       const notifications = await adminApi.getClientNotifications(client.id);
@@ -378,38 +377,40 @@ const ClientManagement: React.FC = () => {
               </Box>
             )}
             {activeTab === 1 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Termine</Typography>
-                {clientAppointments.length > 0 ? (
-                  clientAppointments.map((appointment) => (
-                    <Paper key={appointment.id} sx={{ p: 2, mb: 2 }}>
-                      <Typography>{`Datum: ${new Date(appointment.startTime).toLocaleString()}`}</Typography>
-                      <Typography>{`Dienstleistung: ${appointment.serviceName || 'Nicht angegeben'}`}</Typography>
-                      <Typography>{`Spezialist: ${appointment.specialistName || 'Nicht angegeben'}`}</Typography>
-                      <Typography>{`Status: ${appointment.appointmentStatus === AppointmentStatus.BOOKED ? 'Gebucht' : 'Verfügbar'}`}</Typography>
-                      <Button 
-                        variant="outlined" 
-                        color="error" 
-                        onClick={() => handleCancelAppointment(appointment)}
-                        sx={{ mt: 1 }}
-                      >
-                        Termin stornieren
-                      </Button>
-                    </Paper>
-                  ))
-                ) : (
-                  <Typography>Der Kunde hat keine Termine</Typography>
-                )}
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={handleCreateAppointment}
-                  sx={{ mt: 2 }}
-                >
-                  Termin buchen
-                </Button>
-              </Box>
+    <Box>
+      <Typography variant="h6" gutterBottom>Termine</Typography>
+      {clientAppointments.length > 0 ? (
+        clientAppointments.map((appointment) => (
+          <Paper key={appointment.id} sx={{ p: 2, mb: 2 }}>
+            <Typography>{`Datum: ${new Date(appointment.startTime).toLocaleString()}`}</Typography>
+            <Typography>{`Dienstleistung: ${appointment.serviceName || 'Nicht angegeben'}`}</Typography>
+            <Typography>{`Spezialist: ${appointment.specialistName || 'Nicht angegeben'}`}</Typography>
+            <Typography>{`Status: ${appointment.appointmentStatus}`}</Typography>
+            {appointment.appointmentStatus === AppointmentStatus.BOOKED && (
+              <Button 
+                variant="outlined" 
+                color="error" 
+                onClick={() => handleCancelAppointment(appointment)}
+                sx={{ mt: 1 }}
+              >
+                Termin stornieren
+              </Button>
             )}
+          </Paper>
+        ))
+      ) : (
+        <Typography>Der Kunde hat keine Termine</Typography>
+      )}
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={handleCreateAppointment}
+        sx={{ mt: 2 }}
+      >
+        Termin buchen
+      </Button>
+    </Box>
+  )}
             {activeTab === 2 && (
               <Box>
                 <Typography variant="h6" gutterBottom>Benachrichtigungen</Typography>
