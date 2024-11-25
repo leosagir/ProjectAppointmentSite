@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/ProjectAppointmentSite/static/css/main.dc61a400.css",
+    "main.js": "/ProjectAppointmentSite/static/js/main.5d02ec8d.js",
+    "static/media/Die richtige Zahnbürste wählen.jpg": "/ProjectAppointmentSite/static/media/Die richtige Zahnbürste wählen.aa42cb269023c28743ff.jpg",
+    "static/media/Parodontologie2.jpg": "/ProjectAppointmentSite/static/media/Parodontologie2.66e9fdff9e2c5752f85d.jpg",
+    "static/media/Moderne Methoden der Zahnaufhellung.jpg": "/ProjectAppointmentSite/static/media/Moderne Methoden der Zahnaufhellung.f2bbfa4cb646669c21ad.jpg",
+    "static/media/Prothetik2.jpg": "/ProjectAppointmentSite/static/media/Prothetik2.11065af76c54ea7b2a33.jpg",
+    "static/media/Endodontologie.jpeg": "/ProjectAppointmentSite/static/media/Endodontologie.df2735e9a98cdaa4ff25.jpeg",
+    "static/media/Kieferorthopädie.jpeg": "/ProjectAppointmentSite/static/media/Kieferorthopädie.43472960affca2e36182.jpeg",
+    "static/media/default-specialization.jpeg": "/ProjectAppointmentSite/static/media/default-specialization.203bbd468d0788fdc117.jpeg",
+    "static/media/Ernährung für gesunde Zähne.jpg": "/ProjectAppointmentSite/static/media/Ernährung für gesunde Zähne.56d11c30fb243a02154a.jpg",
+    "static/media/Implantologie2.jpg": "/ProjectAppointmentSite/static/media/Implantologie2.6a6eab84e391760dad70.jpg",
+    "static/media/welcoming-medical-waiting-area.jpg": "/ProjectAppointmentSite/static/media/welcoming-medical-waiting-area.237391764d81f1dfc0dc.jpg",
+    "static/media/Die Bedeutung regelmäßiger Zahnreinigung.jpg": "/ProjectAppointmentSite/static/media/Die Bedeutung regelmäßiger Zahnreinigung.9063b6ec8518d81c6e00.jpg",
+    "static/media/Ästhetische Zahnheilkunde2.jpg": "/ProjectAppointmentSite/static/media/Ästhetische Zahnheilkunde2.5d5c7e4230509eff4efb.jpg",
+    "static/media/Mythen und Fakten über Zahnimplantate.jpg": "/ProjectAppointmentSite/static/media/Mythen und Fakten über Zahnimplantate.2fd0e2c229d3a670a537.jpg",
+    "index.html": "/ProjectAppointmentSite/index.html",
+    "main.dc61a400.css.map": "/ProjectAppointmentSite/static/css/main.dc61a400.css.map",
+    "main.5d02ec8d.js.map": "/ProjectAppointmentSite/static/js/main.5d02ec8d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.dc61a400.css",
+    "static/js/main.5d02ec8d.js"
+  ]
+}
