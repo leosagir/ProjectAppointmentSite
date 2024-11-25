@@ -2,7 +2,6 @@
   "name": "dental-clinic",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://leosagir.github.io/ProjectAppointmentSite",
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -36,7 +35,10 @@
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
+  "homepage": "https://leosagir.github.io/ProjectAppointmentSite",
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build",
     "start": "serve -s build",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -63,6 +65,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/react-big-calendar": "^1.8.12",
-    "eslint": "^8.57.1"
+    "eslint": "^8.57.1",
+    "gh-pages": "^6.2.0"
   }
 }
